@@ -1,7 +1,6 @@
 // SAMPLE
 this.manifest = {
-    "name": "My Extension",
-    "icon": "icon.png",
+    "name": "FancyTube",
     "settings": [
         {
             "tab": i18n.get("information"),

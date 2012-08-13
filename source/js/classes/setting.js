@@ -1,14 +1,12 @@
 //
-// Copyright (c) 2011 Frank Kohlhepp
+// Fancy Settings by Frank Kohlhepp
+// Copyright (c) 2011 - 2012 Frank Kohlhepp
 // https://github.com/frankkohlhepp/fancy-settings
 // License: LGPL v2.1
 //
 (function () {
-    var settings,
-        Bundle;
-    
-    settings = new Store("settings");
-    Bundle = new Class({
+    var settings = new Store("settings");
+    var Bundle = new Class({
         // Attributes:
         // - tab
         // - group
@@ -552,13 +550,10 @@
             
             if (this.params.options === undefined) { return; }
             this.params.options.each((function (option) {
-                var optionID,
-                    container;
-                
                 this.params.searchString += (option[1] || option[0]) + "•";
                 
-                optionID = String.uniqueID();
-                container = (new Element("div", {
+                var optionID = String.uniqueID();
+                var container = (new Element("div", {
                     "class": "setting container radio-buttons"
                 })).inject(this.bundle);
                 this.containers.push(container);
@@ -624,11 +619,8 @@
         },
         
         "create": function (params) {
-            var types,
-                bundle;
-            
             // Available types
-            types = {
+            var types = {
                 "description": "Description",
                 "button": "Button",
                 "text": "Text",
@@ -640,7 +632,7 @@
             };
             
             if (types.hasOwnProperty(params.type)) {
-                bundle = new Bundle[types[params.type]](params);
+                var bundle = new Bundle[types[params.type]](params);
                 bundle.bundleContainer = this.container;
                 bundle.bundle.inject(this.container);
                 return bundle;
