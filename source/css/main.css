@@ -4,118 +4,95 @@
 // https://github.com/frankkohlhepp/fancy-settings
 // License: LGPL v2.1
 */
-html, body {
-    height: 100%;
-}
-
+html,
 body {
-    font-family: "Lucida Grande", sans-serif;
-    line-height: 1.8;
-    color: black;
+  height: 100%;
 }
-
+body {
+  font-family: "Lucida Grande", sans-serif;
+  line-height: 1.8;
+  color: #303942;
+}
 #sidebar {
-    float: left;
-    height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
+  float: left;
+  height: 100%;
+  margin-right: 21px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-
 #name {
-    margin: 21px 27px 12px 23px;
-    font-size: 1.5em;
-    color: #5c6166;
-    -webkit-transition: margin-bottom 0.1s ease;
-    -moz-transition: margin-bottom 0.1s ease;
-    -o-transition: margin-bottom 0.1s ease;
-    -ms-transition: margin-bottom 0.1s ease;
-    transition: margin-bottom 0.1s ease;
+  margin: 21px 27px 17px 23px;
+  font-size: 1.5em;
+  color: #5c6166;
 }
-
-html.searching #name {
-    margin-bottom: 18px;
-}
-
 #tab-container {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
-
 #tab-container .tab {
-    margin: 5px 0;
-    padding: 0 27px 0 24px;
-    line-height: 17px;
-    color: #999999;
-    cursor: pointer;
+  padding: 6px 27px 5px 24px;
+  line-height: 1.5;
+  color: #999;
+  cursor: pointer;
 }
-
-#tab-container .tab:hover,
-html.searching #tab-container .tab.active:hover {
-    color: #777777;
+#tab-container .tab.active {
+  border-left: 6px solid #464e5a;
+  padding-left: 18px;
+  color: #464e5a;
 }
-
-html.searching #search-tab,
-html.searching #search-tab:hover {
-    color: #464e5a;
-}
-
-#tab-container .tab.active, html.searching #search-tab {
-    border-left: 6px solid #464e5A;
-    padding-left: 18px;
-    color: #464e5a;
-}
-
 html.searching #tab-container .tab.active {
-    border-left: none;
-    padding-left: 24px;
-    color: #999999;
+  border-left: none;
+  padding-left: 24px;
+  color: #999;
 }
-
-#content {
-    position: relative;
-    width: 740px;
-    height: 100%;
-    padding: 20px;
-    padding-top: 0;
-    overflow-y: auto;
-    overflow-x: hidden;
-}
-
-.tab-content {
-    display: none;
-}
-
-html.searching .tab-content {
-    display: none !important;
-}
-
 #search-tab {
-    height: 1px;
-    overflow: hidden;
-    -webkit-transition: height 0.1s ease;
-    -moz-transition: height 0.1s ease;
-    -o-transition: height 0.1s ease;
-    -ms-transition: height 0.1s ease;
-    transition: height 0.1s ease;
+  width: 0;
+  height: 1px;
+  padding: 0 27px 0 24px !important;
+  overflow: hidden;
+  -webkit-transition: height 0.05s ease;
+  -moz-transition: height 0.05s ease;
+  -o-transition: height 0.05s ease;
+  -ms-transition: height 0.05s ease;
+  transition: height 0.05s ease;
 }
-
 html.searching #search-tab {
-    height: 17px;
+  border-left: 6px solid #464e5a;
+  width: auto;
+  height: 29px;
+  padding: 6px 27px 6px 18px !important;
+  color: #464e5a;
 }
-
+#content {
+  position: relative;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#search-container {
+  position: absolute;
+  top: 20px;
+  left: 460px;
+  z-index: 2;
+}
 #search {
-    position: fixed;
-    width: 250px;
-    top: 19px;
-    left: 618px;
-    z-index: 2;
+  position: fixed;
+  width: 250px;
 }
-
+.tab-content {
+  display: none;
+  margin-bottom: 20px;
+}
+html.searching .tab-content {
+  display: none !important;
+}
 html.searching #search-tab-content {
-    display: block !important;
+  display: block !important;
 }
-
-html.measuring .tab-content, html.measuring #search-tab-content {
-    display: block !important;
-    overflow: hidden;
-    opacity: 0;
+html.measuring .tab-content,
+html.measuring #search-tab-content {
+  display: block !important;
+  overflow: hidden !important;
+  opacity: 0 !important;
+  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0) !important;
+  filter: alpha(opacity=0) !important;
 }
