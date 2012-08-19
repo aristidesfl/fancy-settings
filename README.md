@@ -1,3 +1,17 @@
+compile:
+
+coffee -c -w -o source/js source/coffee
+stylus -w -o source/css source/styl
+
+
++ new style
++ tab #1 #2 usw ...
++ -> stylus
++ -> coffeescript
++ align
+
+
+
 # [Fancy Settings 1.2](https://github.com/frankkohlhepp/fancy-settings)
 *Create fancy, chrome-look-alike settings for your Chrome or Safari extension in minutes!*
 
