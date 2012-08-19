@@ -14,8 +14,9 @@
 
   Bundle = (function() {
 
-    function Bundle(creator) {
+    function Bundle(creator, name) {
       this.creator = creator;
+      this.name = name;
       this.unsetActive = __bind(this.unsetActive, this);
 
       this.setActive = __bind(this.setActive, this);
@@ -38,13 +39,20 @@
       }
       this.tab.addClass("active");
       this.content.addClass("show");
-      return this.creator.activeBundle = this;
+      this.creator.activeBundle = this;
+      document.location.hash = this.name;
+      if (this.creator.activeBundle !== this) {
+        $("content").scrollTo(0);
+      }
+      return this;
     };
 
     Bundle.prototype.unsetActive = function() {
       this.tab.removeClass("active");
       this.content.removeClass("show");
       this.creator.activeBundle = null;
+      document.location.hash = "1";
+      $("content").scrollTo(0);
       return this;
     };
 
@@ -55,21 +63,37 @@
   window.Tab = Tab = (function() {
 
     function Tab(tabContainer, tabContentContainer) {
+      var _this = this;
       this.tabContainer = tabContainer;
       this.tabContentContainer = tabContentContainer;
       this["new"] = __bind(this["new"], this);
 
+      this.autoselect = document.location.hash.substring(1) || "1";
+      this.tabs = {};
+      this.counter = 1;
+      window.addEventListener("hashchange", function() {
+        var select, _ref;
+        select = document.location.hash.substring(1) || "1";
+        if (_this.activeBundle.name === select) {
+          return;
+        }
+        if (_this.tabs[select] != null) {
+          return _this.tabs[select].setActive();
+        } else {
+          return (_ref = _this.tabs[1]) != null ? _ref.setActive() : void 0;
+        }
+      });
     }
 
     Tab.prototype["new"] = function() {
       var bundle;
-      bundle = new Bundle(this);
+      bundle = new Bundle(this, (this.counter++).toString());
       bundle.tab.inject(this.tabContainer);
       bundle.content.inject(this.tabContentContainer);
-      if (this.activeBundle == null) {
+      if (!(this.activeBundle != null) || bundle.name === this.autoselect) {
         bundle.setActive();
       }
-      return bundle;
+      return this.tabs[bundle.name] = bundle;
     };
 
     return Tab;
