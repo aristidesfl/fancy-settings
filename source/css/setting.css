@@ -39,7 +39,8 @@ html.searching #search-tab-name {
 html.searching .setting.group {
   display: none;
 }
-html.searching .setting.group.match {
+html.searching .setting.group.match,
+html.measuring .setting.group {
   display: block;
 }
 .setting.group-name {
@@ -58,7 +59,8 @@ html.searching .setting.group.match {
 html.searching .setting.bundle {
   display: none;
 }
-html.searching .setting.bundle.match {
+html.searching .setting.bundle.match,
+html.measuring .setting.bundle {
   display: block;
 }
 .setting.bundle.list-box {
