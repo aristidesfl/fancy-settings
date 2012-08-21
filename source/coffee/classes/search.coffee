@@ -8,16 +8,34 @@ window.Search = class Search
   constructor: (@search) ->
     @settings = []
     
+    # Wire up search box
     find = =>
       @find @search.get "value"
     
     @search.addEvent "keyup", (event) =>
-      if event.key == "esc"
+      if event.key is "esc"
         @reset()
       else
         find()
     
-    @search.addEventListener "search", find, false
+    @search.addEventListener "search", find
+    
+    # Wire up search string in hash
+    searchString = (decodeURI document.location.hash.substring(1).split("/")[1] or "").trim()
+    if searchString
+      @search.focus()
+      @search.set "value", searchString
+      @find searchString
+    
+    window.addEventListener "hashchange", =>
+      searchString = (decodeURI document.location.hash.substring(1).split("/")[1] or "").trim()
+      if searchString isnt @search.get("value").trim()
+        if searchString
+          @search.focus()
+          @search.set "value", searchString
+          @find searchString
+        else
+          @reset()
   
   bind: (tab) =>
     tab.addEvent "click", @reset
@@ -25,11 +43,17 @@ window.Search = class Search
   
   index: (setting) =>
     @settings.push setting
+    @find @search.get("value")
     this
   
   find: (searchString) =>
+    # Set searchString in hash
+    if searchString.trim() and (decodeURI document.location.hash.substring(1).split("/")[1] or "").trim() isnt searchString.trim()
+      document.location.hash = "#{document.location.hash.substring(1).split("/")[0]}/#{encodeURI searchString.trim()}"
+    
     # Exit search mode
     if !searchString.trim()
+      document.location.hash = document.location.hash.substring(1).split("/")[0]
       document.html.removeClass "searching"
       return this
     

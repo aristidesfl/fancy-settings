@@ -11,31 +11,40 @@ class Bundle
     @tab.addEvent "click", @setActive
   
   setActive: =>
-    @creator.activeBundle?.unsetActive() unless @creator.activeBundle == this
+    @creator.activeBundle?.unsetActive() unless @creator.activeBundle is this
+    
     @tab.addClass "active"
     @content.addClass "show"
     @creator.activeBundle = this
-    document.location.hash = @name
-    $("content").scrollTo 0 unless @creator.activeBundle == this
+    
+    $("content").scrollTo 0 unless @creator.activeBundle is this
+    @setHash()
     this
   
   unsetActive: =>
     @tab.removeClass "active"
     @content.removeClass "show"
     @creator.activeBundle = null
-    document.location.hash = "1"
-    $("content").scrollTo 0
+    @setHash()
     this
+  
+  setHash: =>
+    if !@creator.searchString
+      document.location.hash = @name if document.location.hash.substring(1).split("/")[0] isnt @name
+    else
+      document.location.hash = "#{@name}/#{@creator.searchString}" if document.location.hash.substring(1).split("/")[0] isnt @name
 
 window.Tab = class Tab
   constructor: (@tabContainer, @tabContentContainer) ->
-    @autoselect = document.location.hash.substring(1) or "1"
+    @autoselect = document.location.hash.substring(1).split("/")[0] or "1"
+    @searchString = document.location.hash.substring(1).split("/")[1]
     @tabs = {}
     @counter = 1
     
     window.addEventListener "hashchange", =>
-      select = document.location.hash.substring(1) or "1"
-      unless @activeBundle.name != select
+      select = document.location.hash.substring(1).split("/")[0] or "1"
+      @searchString = document.location.hash.substring(1).split("/")[1]
+      unless @activeBundle.name isnt select
         return
       
       if @tabs[select]?
@@ -47,5 +56,5 @@ window.Tab = class Tab
     bundle = new Bundle this, (@counter++).toString()
     bundle.tab.inject @tabContainer
     bundle.content.inject @tabContentContainer
-    bundle.setActive() if !@activeBundle? or bundle.name == @autoselect
+    bundle.setActive() if !@activeBundle? or bundle.name is @autoselect
     @tabs[bundle.name] = bundle

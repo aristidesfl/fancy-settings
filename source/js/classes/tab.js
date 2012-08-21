@@ -17,6 +17,8 @@
     function Bundle(creator, name) {
       this.creator = creator;
       this.name = name;
+      this.setHash = __bind(this.setHash, this);
+
       this.unsetActive = __bind(this.unsetActive, this);
 
       this.setActive = __bind(this.setActive, this);
@@ -40,10 +42,10 @@
       this.tab.addClass("active");
       this.content.addClass("show");
       this.creator.activeBundle = this;
-      document.location.hash = this.name;
       if (this.creator.activeBundle !== this) {
         $("content").scrollTo(0);
       }
+      this.setHash();
       return this;
     };
 
@@ -51,9 +53,20 @@
       this.tab.removeClass("active");
       this.content.removeClass("show");
       this.creator.activeBundle = null;
-      document.location.hash = "1";
-      $("content").scrollTo(0);
+      this.setHash();
       return this;
+    };
+
+    Bundle.prototype.setHash = function() {
+      if (!this.creator.searchString) {
+        if (document.location.hash.substring(1).split("/")[0] !== this.name) {
+          return document.location.hash = this.name;
+        }
+      } else {
+        if (document.location.hash.substring(1).split("/")[0] !== this.name) {
+          return document.location.hash = "" + this.name + "/" + this.creator.searchString;
+        }
+      }
     };
 
     return Bundle;
@@ -68,12 +81,14 @@
       this.tabContentContainer = tabContentContainer;
       this["new"] = __bind(this["new"], this);
 
-      this.autoselect = document.location.hash.substring(1) || "1";
+      this.autoselect = document.location.hash.substring(1).split("/")[0] || "1";
+      this.searchString = document.location.hash.substring(1).split("/")[1];
       this.tabs = {};
       this.counter = 1;
       window.addEventListener("hashchange", function() {
         var select, _ref;
-        select = document.location.hash.substring(1) || "1";
+        select = document.location.hash.substring(1).split("/")[0] || "1";
+        _this.searchString = document.location.hash.substring(1).split("/")[1];
         if (_this.activeBundle.name === select) {
           return;
         }

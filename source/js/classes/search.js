@@ -15,7 +15,7 @@
   window.Search = Search = (function() {
 
     function Search(search) {
-      var find,
+      var find, searchString,
         _this = this;
       this.search = search;
       this.reset = __bind(this.reset, this);
@@ -37,7 +37,25 @@
           return find();
         }
       });
-      this.search.addEventListener("search", find, false);
+      this.search.addEventListener("search", find);
+      searchString = (decodeURI(document.location.hash.substring(1).split("/")[1] || "")).trim();
+      if (searchString) {
+        this.search.focus();
+        this.search.set("value", searchString);
+        this.find(searchString);
+      }
+      window.addEventListener("hashchange", function() {
+        searchString = (decodeURI(document.location.hash.substring(1).split("/")[1] || "")).trim();
+        if (searchString !== _this.search.get("value").trim()) {
+          if (searchString) {
+            _this.search.focus();
+            _this.search.set("value", searchString);
+            return _this.find(searchString);
+          } else {
+            return _this.reset();
+          }
+        }
+      });
     }
 
     Search.prototype.bind = function(tab) {
@@ -47,13 +65,18 @@
 
     Search.prototype.index = function(setting) {
       this.settings.push(setting);
+      this.find(this.search.get("value"));
       return this;
     };
 
     Search.prototype.find = function(searchString) {
       var results,
         _this = this;
+      if (searchString.trim() && (decodeURI(document.location.hash.substring(1).split("/")[1] || "")).trim() !== searchString.trim()) {
+        document.location.hash = "" + (document.location.hash.substring(1).split("/")[0]) + "/" + (encodeURI(searchString.trim()));
+      }
       if (!searchString.trim()) {
+        document.location.hash = document.location.hash.substring(1).split("/")[0];
         document.html.removeClass("searching");
         return this;
       }
