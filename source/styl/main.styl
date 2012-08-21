@@ -80,13 +80,9 @@ body
   display: none
   margin-bottom: 20px
   
-  html.searching &
-    display: none !important
+  html.searching &.match
+  html.measuring &
+    display: block
 
 html.searching #search-tab-content
-  display: block !important
-
-html.measuring .tab-content, html.measuring #search-tab-content
-  display: block !important
-  overflow: hidden !important
-  opacity: 0 !important
+  display: block

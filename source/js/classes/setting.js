@@ -28,7 +28,7 @@
     
     "initialize": function (params) {
       this.params = params;
-      this.params.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
+      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
       
       this.createDOM();
       this.setupDOM();
@@ -38,7 +38,7 @@
         this.set(settings.get(this.params.name), true);
       }
       
-      this.params.searchString = this.params.searchString.toLowerCase();
+      this.searchString = this.searchString.toLowerCase();
     },
     
     "addEvents": function () {
@@ -75,7 +75,7 @@
     
     "initialize": function (params) {
       this.params = params;
-      this.params.searchString = "";
+      this.searchString = "";
       
       this.createDOM();
       this.setupDOM();
@@ -114,13 +114,13 @@
     
     "initialize": function (params) {
       this.params = params;
-      this.params.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
+      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
       
       this.createDOM();
       this.setupDOM();
       this.addEvents();
       
-      this.params.searchString = this.params.searchString.toLowerCase();
+      this.searchString = this.searchString.toLowerCase();
     },
     
     "createDOM": function () {
@@ -146,12 +146,12 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
       
       if (this.params.text !== undefined) {
         this.element.set("value", this.params.text);
-        this.params.searchString += this.params.text + "•";
+        this.searchString += this.params.text + "•";
       }
       
       this.element.inject(this.container);
@@ -193,17 +193,17 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
       
       if (this.params.text !== undefined) {
         this.element.set("placeholder", this.params.text);
-        this.params.searchString += this.params.text + "•";
+        this.searchString += this.params.text + "•";
       }
       
       if (this.params.masked === true) {
         this.element.set("type", "password");
-        this.params.searchString += "password" + "•";
+        this.searchString += "password" + "•";
       }
       
       if (this.params.default !== undefined) {
@@ -265,7 +265,7 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
     },
     
@@ -291,7 +291,7 @@
     
     "initialize": function (params) {
       this.params = params;
-      this.params.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
+      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
       
       this.createDOM();
       this.setupDOM();
@@ -303,7 +303,7 @@
         this.set(0, true);
       }
       
-      this.params.searchString = this.params.searchString.toLowerCase();
+      this.searchString = this.searchString.toLowerCase();
     },
     
     "createDOM": function () {
@@ -333,7 +333,7 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
       
       if (this.params.max !== undefined) {
@@ -444,7 +444,7 @@
       if (this.params.options.groups !== undefined) {
         groups = {};
         this.params.options.groups.each((function (groups, group) {
-          this.params.searchString += (group) + "•";
+          this.searchString += (group) + "•";
           groups[group] = (new Element("optgroup", {
             "label": group,
           }).inject(this.element));
@@ -454,7 +454,7 @@
       if (this.params.options.values !== undefined) {
         this.params.options.values.each((function(groups, option) {
           option = arrayToObject(option);
-          this.params.searchString += (option.text || option.value) + "•";
+          this.searchString += (option.text || option.value) + "•";
 
           // find the parent of this option - either a group or the main element
           var parent;
@@ -485,7 +485,7 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
       
       this.element.inject(this.container);
@@ -518,7 +518,7 @@
       
       if (this.params.options === undefined) { return; }
       this.params.options.each((function (option) {
-        this.params.searchString += (option[1] || option[0]) + "•";
+        this.searchString += (option[1] || option[0]) + "•";
         
         (new Element("option", {
           "value": option[0],
@@ -554,7 +554,7 @@
       
       if (this.params.options === undefined) { return; }
       this.params.options.each((function (option) {
-        this.params.searchString += (option[1] || option[0]) + "•";
+        this.searchString += (option[1] || option[0]) + "•";
         
         var optionID = String.uniqueID();
         var container = (new Element("div", {
@@ -582,7 +582,7 @@
       if (this.params.label !== undefined) {
         this.label.set("html", this.params.label);
         this.label.inject(this.bundle, "top");
-        this.params.searchString += this.params.label + "•";
+        this.searchString += this.params.label + "•";
       }
     },
     

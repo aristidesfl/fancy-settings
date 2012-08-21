@@ -13,64 +13,65 @@ window.FancySettings = class FancySettings
     $("name").set "text", @name
     
     $("search-tab").set "text", i18n.get "Search"
-    $("search-label").set "text", i18n.get "Search"
+    $("search-tab-name").set "text", i18n.get "Search Results"
     $("search").set "placeholder", i18n.get("Search") + "..."
+    $("nothing-found").set "text", i18n.get "No matches were found."
     
     @tab = new Tab $("tab-container"), $("content")
-    @search = new Search $("search"), $("search-tab-content")
+    @search = new Search $("search")
   
   getTab: (name) =>
     return @tabs[name] if @tabs[name]?
     
     # Create new tab
-    tab = {groups: {}}
-    tab.content = @tab.new()
+    tab = @tab.new()
+    tab.groups = {}
     
-    tab.content.tab.set "text", name
-    @search.bind tab.content.tab
+    tab.tab.set "text", name
+    @search.bind tab.tab
     
-    tab.content = tab.content.content
-    (new Element "h2",
+    tab.content.name = (new Element "h2",
       class: "tab-name"
       text: name
     ).inject tab.content
     
-    tab.settings = ((new Element "div",
+    tab.content.settings = (new Element "div",
       class: "tab-settings"
-    ).inject tab.content)
+    ).inject tab.content
     
     @tabs[name] = tab
   
-  getGroup: (name, tabName) =>
-    tab = @getTab tabName
+  getGroup: (name, tab) =>
     return tab.groups[name] if tab.groups[name]?
     
     # Create new group
-    group = {}
-    
-    group.content = ((new Element "div",
+    group = (new Element "div",
       class: "setting group"
-    ).inject tab.settings)
+    ).inject tab.content.settings
     
-    (new Element "div",
+    group.name = (new Element "div",
       class: "setting group-name"
       text: name
-    ).inject group.content
+    ).inject group
     
-    group.content = ((new Element "div",
+    group.content = (new Element "div",
       class: "setting group-content"
-    ).inject group.content)
+    ).inject group
     
     group.setting = new Setting group.content
     tab.groups[name] = group
   
   new: (params) =>
-    group = @getGroup params.group, params.tab
+    tab = @getTab params.tab
+    group = @getGroup params.group, tab
     
     # Create and index the setting
     setting = group.setting.new params
+    setting.tab = tab
+    setting.group = group
+    
     @settings[params.name] = setting
-    @search.add setting
+    @search.index setting
     setting
   
   align: (settings) =>
@@ -109,10 +110,10 @@ window.FancySettings = class FancySettings
       if width < maxWidth
         if type == "button" or type == "slider"
           setting.element.setStyle "margin-left", (maxWidth - width + 2) + "px"
-          setting.search.element.setStyle "margin-left", (maxWidth - width + 2) + "px"
+          #setting.search.element.setStyle "margin-left", (maxWidth - width + 2) + "px"
         else
           setting.element.setStyle "margin-left", (maxWidth - width) + "px"
-          setting.search.element.setStyle "margin-left", (maxWidth - width) + "px"
+          #setting.search.element.setStyle "margin-left", (maxWidth - width) + "px"
     document.html.removeClass "measuring"
 
 

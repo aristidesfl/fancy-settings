@@ -8,7 +8,11 @@ this.i18n = {
     "en": "Search",
     "de": "Suche"
   },
-  "nothing-found": {
+  "Search Results": {
+    "en": "Search Results",
+    "de": "Suchergebnisse"
+  },
+  "No matches were found.": {
     "en": "No matches were found.",
     "de": "Keine Übereinstimmungen gefunden."
   },

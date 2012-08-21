@@ -21,11 +21,26 @@
   color: #303942;
   z-index: 1;
 }
+html.searching .tab-name {
+  display: none;
+}
+html.searching #search-tab-name {
+  display: block;
+}
 .tab-settings {
   margin-top: 63px;
 }
+#search-tab-settings {
+  display: block;
+}
 .setting.group {
   margin-top: 15px;
+}
+html.searching .setting.group {
+  display: none;
+}
+html.searching .setting.group.match {
+  display: block;
 }
 .setting.group-name {
   color: #000;
@@ -39,6 +54,12 @@
 .setting.bundle {
   max-width: 600px;
   margin-bottom: 5px;
+}
+html.searching .setting.bundle {
+  display: none;
+}
+html.searching .setting.bundle.match {
+  display: block;
 }
 .setting.bundle.list-box {
   margin-bottom: 10px;
@@ -77,8 +98,8 @@
 }
 #nothing-found {
   display: none;
-  margin-top: 10px;
-  font-size: 18px;
-  font-weight: lighter;
-  color: #999;
+  margin-top: 67px;
+}
+html.searching #nothing-found.match {
+  display: block;
 }

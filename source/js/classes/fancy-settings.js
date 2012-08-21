@@ -29,10 +29,11 @@
       $("title").set("text", this.name);
       $("name").set("text", this.name);
       $("search-tab").set("text", i18n.get("Search"));
-      $("search-label").set("text", i18n.get("Search"));
+      $("search-tab-name").set("text", i18n.get("Search Results"));
       $("search").set("placeholder", i18n.get("Search") + "...");
+      $("nothing-found").set("text", i18n.get("No matches were found."));
       this.tab = new Tab($("tab-container"), $("content"));
-      this.search = new Search($("search"), $("search-tab-content"));
+      this.search = new Search($("search"));
     }
 
     FancySettings.prototype.getTab = function(name) {
@@ -40,50 +41,48 @@
       if (this.tabs[name] != null) {
         return this.tabs[name];
       }
-      tab = {
-        groups: {}
-      };
-      tab.content = this.tab["new"]();
-      tab.content.tab.set("text", name);
-      this.search.bind(tab.content.tab);
-      tab.content = tab.content.content;
-      (new Element("h2", {
+      tab = this.tab["new"]();
+      tab.groups = {};
+      tab.tab.set("text", name);
+      this.search.bind(tab.tab);
+      tab.content.name = (new Element("h2", {
         "class": "tab-name",
         text: name
       })).inject(tab.content);
-      tab.settings = (new Element("div", {
+      tab.content.settings = (new Element("div", {
         "class": "tab-settings"
       })).inject(tab.content);
       return this.tabs[name] = tab;
     };
 
-    FancySettings.prototype.getGroup = function(name, tabName) {
-      var group, tab;
-      tab = this.getTab(tabName);
+    FancySettings.prototype.getGroup = function(name, tab) {
+      var group;
       if (tab.groups[name] != null) {
         return tab.groups[name];
       }
-      group = {};
-      group.content = (new Element("div", {
+      group = (new Element("div", {
         "class": "setting group"
-      })).inject(tab.settings);
-      (new Element("div", {
+      })).inject(tab.content.settings);
+      group.name = (new Element("div", {
         "class": "setting group-name",
         text: name
-      })).inject(group.content);
+      })).inject(group);
       group.content = (new Element("div", {
         "class": "setting group-content"
-      })).inject(group.content);
+      })).inject(group);
       group.setting = new Setting(group.content);
       return tab.groups[name] = group;
     };
 
     FancySettings.prototype["new"] = function(params) {
-      var group, setting;
-      group = this.getGroup(params.group, params.tab);
+      var group, setting, tab;
+      tab = this.getTab(params.tab);
+      group = this.getGroup(params.group, tab);
       setting = group.setting["new"](params);
+      setting.tab = tab;
+      setting.group = group;
       this.settings[params.name] = setting;
-      this.search.add(setting);
+      this.search.index(setting);
       return setting;
     };
 
@@ -115,11 +114,9 @@
         width = setting.label.offsetWidth;
         if (width < maxWidth) {
           if (type === "button" || type === "slider") {
-            setting.element.setStyle("margin-left", (maxWidth - width + 2) + "px");
-            return setting.search.element.setStyle("margin-left", (maxWidth - width + 2) + "px");
+            return setting.element.setStyle("margin-left", (maxWidth - width + 2) + "px");
           } else {
-            setting.element.setStyle("margin-left", (maxWidth - width) + "px");
-            return setting.search.element.setStyle("margin-left", (maxWidth - width) + "px");
+            return setting.element.setStyle("margin-left", (maxWidth - width) + "px");
           }
         }
       });

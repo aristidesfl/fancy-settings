@@ -18,12 +18,27 @@
   font-size: 1.5em
   color: #303942
   z-index: 1
+  
+  html.searching &
+    display: none
+
+html.searching #search-tab-name
+  display: block
 
 .tab-settings
   margin-top: 63px
 
+#search-tab-settings
+  display: block
+
 .setting.group
   margin-top: 15px
+  
+  html.searching &
+    display: none
+    
+    &.match
+      display: block
 
 .setting.group-name
   color: black
@@ -37,6 +52,12 @@
 .setting.bundle
   max-width: 600px
   margin-bottom: 5px
+  
+  html.searching &
+    display: none
+    
+    &.match
+      display: block
 
 .setting.bundle.list-box
   margin-bottom: 10px
@@ -73,8 +94,7 @@
 
 #nothing-found
   display: none
-  margin-top: 10px
-  font-size: 18px
-  font-weight: lighter
-  color: #999999
-
+  margin-top: 67px
+  
+  html.searching &.match
+    display: block

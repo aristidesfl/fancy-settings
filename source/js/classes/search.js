@@ -14,113 +14,73 @@
 
   window.Search = Search = (function() {
 
-    function Search(search, searchResultContainer) {
-      var find, setting,
+    function Search(search) {
+      var find,
         _this = this;
       this.search = search;
-      this.searchResultContainer = searchResultContainer;
       this.reset = __bind(this.reset, this);
 
       this.find = __bind(this.find, this);
 
-      this.add = __bind(this.add, this);
+      this.index = __bind(this.index, this);
 
       this.bind = __bind(this.bind, this);
 
-      this.index = [];
-      this.groups = {};
-      this.setting = new Setting(new Element("div"));
-      setting = new Setting(this.searchResultContainer);
-      this.nothingFound = setting["new"]({
-        type: "description",
-        text: i18n.get("No matches were found.")
-      });
-      this.nothingFound.bundle.set("id", "nothing-found");
-      find = function(event) {
-        return _this.find(event.target.get("value"));
+      this.settings = [];
+      find = function() {
+        return _this.find(_this.search.get("value"));
       };
-      this.search.addEvent("keyup", function() {
+      this.search.addEvent("keyup", function(event) {
         if (event.key === "esc") {
           return _this.reset();
         } else {
-          return find(event);
+          return find();
         }
       });
       this.search.addEventListener("search", find, false);
     }
 
     Search.prototype.bind = function(tab) {
-      return tab.addEvent("click", this.reset);
+      tab.addEvent("click", this.reset);
+      return this;
     };
 
-    Search.prototype.add = function(setting) {
-      var searchSetting,
-        _this = this;
-      searchSetting = this.setting["new"](setting.params);
-      setting.search = searchSetting;
-      searchSetting.original = setting;
-      this.index.push(searchSetting);
-      setting.addEvent("action", function(value, stopPropagation) {
-        if (searchSetting.set !== void 0 && stopPropagation !== true) {
-          return searchSetting.set(value, true);
-        }
-      });
-      return searchSetting.addEvent("action", function(value) {
-        if (setting.set !== void 0) {
-          setting.set(value, true);
-        }
-        return setting.fireEvent("action", [value, true]);
-      });
+    Search.prototype.index = function(setting) {
+      this.settings.push(setting);
+      return this;
     };
 
     Search.prototype.find = function(searchString) {
-      var result,
+      var results,
         _this = this;
-      if (searchString.trim() === "") {
+      if (!searchString.trim()) {
         document.html.removeClass("searching");
-        return;
+        return this;
       }
-      this.index.each(function(setting) {
-        return setting.bundle.dispose();
-      });
-      Object.each(this.groups, function(group) {
-        return group.dispose();
+      $("nothing-found").removeClass("match");
+      this.settings.each(function(setting) {
+        setting.bundle.removeClass("match");
+        setting.group.removeClass("match");
+        return setting.tab.content.removeClass("match");
       });
       document.html.addClass("searching");
-      result = this.index.filter(function(setting) {
-        if (setting.params.searchString.contains(searchString.trim().toLowerCase())) {
+      results = this.settings.filter(function(setting) {
+        if (setting.searchString.toLowerCase().contains(searchString.trim().toLowerCase())) {
           return true;
         } else {
           return false;
         }
       });
-      result.each(function(setting) {
-        var group;
-        if (_this.groups[setting.params.group] === void 0) {
-          _this.groups[setting.params.group] = (new Element("div", {
-            "class": "setting group"
-          })).inject(_this.searchResultContainer);
-          group = _this.groups[setting.params.group];
-          (new Element("td", {
-            "class": "setting group-name",
-            text: setting.params.group
-          })).inject(group);
-          group.settings = (new Element("div", {
-            "class": "setting group-content"
-          })).inject(group);
-          group.content = (new Element("td", {
-            "class": "setting group-content"
-          })).inject(group.settings);
-        } else {
-          group = _this.groups[setting.params.group].inject(_this.searchResultContainer);
-        }
-        return setting.bundle.inject(group.content);
-      });
-      if (result.length === 0) {
-        return this.nothingFound.bundle.addClass("show");
+      if (!results.length) {
+        $("nothing-found").addClass("match");
       } else {
-        return this.nothingFound.bundle.removeClass("show");
+        results.each(function(setting) {
+          setting.bundle.addClass("match");
+          setting.group.addClass("match");
+          return setting.tab.content.addClass("match");
+        });
       }
+      return this;
     };
 
     Search.prototype.reset = function() {

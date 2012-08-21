@@ -82,17 +82,10 @@ html.searching #search-tab {
   display: none;
   margin-bottom: 20px;
 }
-html.searching .tab-content {
-  display: none !important;
+html.searching .tab-content.match,
+html.measuring .tab-content {
+  display: block;
 }
 html.searching #search-tab-content {
-  display: block !important;
-}
-html.measuring .tab-content,
-html.measuring #search-tab-content {
-  display: block !important;
-  overflow: hidden !important;
-  opacity: 0 !important;
-  -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0) !important;
-  filter: alpha(opacity=0) !important;
+  display: block;
 }
