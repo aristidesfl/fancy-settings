@@ -15,9 +15,9 @@ class Bundle
     
     @tab.addClass "active"
     @content.addClass "show"
-    @creator.activeBundle = this
     
     $("content").scrollTo 0 unless @creator.activeBundle is this
+    @creator.activeBundle = this
     @setHash()
     this
   

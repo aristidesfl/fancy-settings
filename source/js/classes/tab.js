@@ -41,10 +41,10 @@
       }
       this.tab.addClass("active");
       this.content.addClass("show");
-      this.creator.activeBundle = this;
       if (this.creator.activeBundle !== this) {
         $("content").scrollTo(0);
       }
+      this.creator.activeBundle = this;
       this.setHash();
       return this;
     };
