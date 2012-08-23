@@ -1,3 +1,5 @@
+**Attention: use [tags](https://github.com/frankkohlhepp/fancy-settings/tags) to download your copy. The current master branch is a bit of a mess. At least for now. Sorry.**
+
 # [Fancy Settings 1.2](https://github.com/frankkohlhepp/fancy-settings)
 *Create fancy, chrome-look-alike settings for your Chrome or Safari extension in minutes!*
 
