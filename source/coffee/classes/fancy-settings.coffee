@@ -61,7 +61,18 @@ window.FancySettings = class FancySettings
     group.setting = new Setting group.content
     tab.groups[name] = group
   
+  check: (param, value) =>
+    success = typeOf(value) is "string" and !!value
+    throw "Error: #{param} is a required parameter. Check your manifest!" unless success
+    this
+  
   new: (params) =>
+    # Check required basic values
+    @check "tab", params.tab
+    @check "group", params.group
+    @check "name", params.name
+    @check "type", params.type
+    
     tab = @getTab params.tab
     group = @getGroup params.group, tab
     

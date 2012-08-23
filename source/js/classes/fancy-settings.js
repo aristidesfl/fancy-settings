@@ -20,6 +20,8 @@
 
       this["new"] = __bind(this["new"], this);
 
+      this.check = __bind(this.check, this);
+
       this.getGroup = __bind(this.getGroup, this);
 
       this.getTab = __bind(this.getTab, this);
@@ -74,8 +76,21 @@
       return tab.groups[name] = group;
     };
 
+    FancySettings.prototype.check = function(param, value) {
+      var success;
+      success = typeOf(value) === "string" && !!value;
+      if (!success) {
+        throw "Error: " + param + " is a required parameter. Check your manifest!";
+      }
+      return this;
+    };
+
     FancySettings.prototype["new"] = function(params) {
       var group, setting, tab;
+      this.check("tab", params.tab);
+      this.check("group", params.group);
+      this.check("name", params.name);
+      this.check("type", params.type);
       tab = this.getTab(params.tab);
       group = this.getGroup(params.group, tab);
       setting = group.setting["new"](params);
