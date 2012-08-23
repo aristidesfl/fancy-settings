@@ -1,13 +1,235 @@
+###
+## Fancy Settings by Frank Kohlhepp
+## Copyright (c) 2011 - 2012 Frank Kohlhepp
+## https://github.com/frankkohlhepp/fancy-settings
+## License: LGPL v2.1
+###
+store = new Store "settings"
+
+class Bundle
+  constructor: (@params) ->
+    @events = {}
+    @searchString = "•#{@params.tab}•#{@params.group}•"
+    
+    @createDOM()
+    @setupDOM()
+    @setupEvents()
+    
+    @searchString = @searchString.toLowerCase()
+  
+  check: (param, type, value, setting) =>
+    unless typeOf(value) is type
+      throw """Error: #{param} is a required parameter (type: #{type}) for the setting "#{setting}". Check your manifest!"""
+    this
+  
+  shouldBeEnabled: (enableValue, value) =>
+    if typeOf(enableValue) is "function"
+      !!enableValue value
+    else
+      enableValue is value
+  
+  addEvent: (type, callback) =>
+    @events[type] ?= []
+    @events[type].include(callback)
+    this
+  
+  removeEvent: (type, callback) =>
+    @events[type]?.erase callback
+    delete @events[type] if !@events[type]?.length
+    this
+  
+  fireEvent: (type, value) =>
+    @events[type]?.each (callback) =>
+      callback value, type
+    this
+
+class Text extends Bundle
+  # label, placeholder, masked, default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle text"
+    
+    @container = new Element "div",
+      class: "setting container text"
+    
+    @element = new Element "input",
+      class: "setting element text",
+      type: "text"
+    
+    @label = new Element "label",
+      class: "setting label text"
+    
+    this
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.placeholder?
+      @element.set "placeholder", @params.placeholder
+      @searchString += "#{@params.placeholder}•"
+    
+    if @params.masked
+      @element.set "type", "password"
+      @searchString += "password•"
+    
+    @check "default", "string", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    change = =>
+      value = @$get()
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    @element.addEvent "change", change
+    @element.addEvent "keyup", change
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "string"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "string"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    @element.get "value"
+  
+  $set: (value) =>
+    @element.set "value", value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.Setting = class Setting
+  constructor: (@container) ->
+  new: (params) =>
+    # Available types
+    types =
+      text: Text
+    
+    if types[params.type]?
+      bundle = new types[params.type] params
+      bundle.bundleContainer = @container
+      bundle.bundle.inject @container
+      bundle
+    else
+      throw "invalidType"
+
+
+
+
+
+
+
+###
 `
 
-//
-// Fancy Settings by Frank Kohlhepp
-// Copyright (c) 2011 - 2012 Frank Kohlhepp
-// https://github.com/frankkohlhepp/fancy-settings
-// License: LGPL v2.1
-//
-(function () {
-  var settings = new Store("settings");
+  var store = new Store("settings");
   var Bundle = new Class({
     // Attributes:
     // - tab
@@ -33,7 +255,7 @@
       this.addEvents();
       
       if (this.params.name !== undefined) {
-        this.set(settings.get(this.params.name), true);
+        this.set(store.get(this.params.name), true);
       }
       
       this.searchString = this.searchString.toLowerCase();
@@ -42,7 +264,7 @@
     "addEvents": function () {
       this.element.addEvent("change", (function (event) {
         if (this.params.name !== undefined) {
-          settings.set(this.params.name, this.get());
+          store.set(this.params.name, this.get());
         }
         
         this.fireEvent("action", this.get());
@@ -218,7 +440,7 @@
     "addEvents": function () {
       var change = (function (event) {
         if (this.params.name !== undefined) {
-          settings.set(this.params.name, this.get());
+          store.set(this.params.name, this.get());
         }
         
         this.fireEvent("action", this.get());
@@ -296,7 +518,7 @@
       this.addEvents();
       
       if (this.params.name !== undefined) {
-        this.set((settings.get(this.params.name) || 0), true);
+        this.set((store.get(this.params.name) || 0), true);
       } else {
         this.set(0, true);
       }
@@ -361,7 +583,7 @@
     "addEvents": function () {
       this.element.addEvent("change", (function (event) {
         if (this.params.name !== undefined) {
-          settings.set(this.params.name, this.get());
+          store.set(this.params.name, this.get());
         }
         
         if (this.params.displayModifier !== undefined) {
@@ -587,7 +809,7 @@
     "addEvents": function () {
       this.bundle.addEvent("change", (function (event) {
         if (this.params.name !== undefined) {
-          settings.set(this.params.name, this.get());
+          store.set(this.params.name, this.get());
         }
         
         this.fireEvent("action", this.get());
@@ -615,36 +837,7 @@
     }
   });
   
-  this.Setting = new Class({
-    "initialize": function (container) {
-      this.container = container;
-    },
-    
-    "new": function (params) {
-      // Available types
-      var types = {
-        "description": "Description",
-        "button": "Button",
-        "text": "Text",
-        "checkbox": "Checkbox",
-        "slider": "Slider",
-        "popupButton": "PopupButton",
-        "listBox": "ListBox",
-        "radioButtons": "RadioButtons"
-      };
-      
-      if (types.hasOwnProperty(params.type)) {
-        var bundle = new Bundle[types[params.type]](params);
-        bundle.bundleContainer = this.container;
-        bundle.bundle.inject(this.container);
-        return bundle;
-      } else {
-        throw "invalidType";
-      }
-    }
-  });
-}());
-
 
 
 `
+###

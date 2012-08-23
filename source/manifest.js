@@ -8,7 +8,8 @@ this.manifest = {
       "name": "username",
       "type": "text",
       "label": i18n.get("username"),
-      "text": i18n.get("x-characters")
+      "text": i18n.get("x-characters"),
+      "default": "My Username"
     },
     {
       "tab": i18n.get("information"),
@@ -17,7 +18,12 @@ this.manifest = {
       "type": "text",
       "label": i18n.get("password"),
       "text": i18n.get("x-characters-pw"),
-      "masked": true
+      "masked": true,
+      "default": "",
+      "enableKey": "username",
+      "enableValue": function (string) {
+        return string.length > 0;
+      }
     },
     {
       "tab": i18n.get("information"),
