@@ -27,6 +27,21 @@ this.manifest = {
     },
     {
       "tab": i18n.get("information"),
+      "group": i18n.get("logout"),
+      "name": "myButton",
+      "type": "pushButton",
+      "label": i18n.get("disconnect"),
+      "value": i18n.get("logout"),
+      "enableKey": "username",
+      "enableValue": function (string) {
+        return string.length > 0;
+      }
+    },
+    
+    /*
+    
+    {
+      "tab": i18n.get("information"),
       "group": i18n.get("login"),
       "name": "myDescription",
       "type": "description",
@@ -39,14 +54,7 @@ this.manifest = {
       "type": "checkbox",
       "label": i18n.get("enable")
     },
-    {
-      "tab": i18n.get("information"),
-      "group": i18n.get("logout"),
-      "name": "myButton",
-      "type": "button",
-      "label": i18n.get("disconnect"),
-      "text": i18n.get("logout")
-    },
+    
     {
       "tab": "Details",
       "group": "Sound",
@@ -107,9 +115,9 @@ this.manifest = {
         ["hot", "Hot and yummy"],
         ["cold"]
       ]
-    }
+    }*/
   ],
-  "alignment": [
+  /*"alignment": [
     [
       "username",
       "password"
@@ -118,5 +126,5 @@ this.manifest = {
       "noti_volume",
       "sound_volume"
     ]
-  ]
+  ]*/
 };

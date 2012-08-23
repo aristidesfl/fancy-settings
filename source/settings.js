@@ -2,7 +2,7 @@ window.addEvent("domready", function () {
   // Option 1: Use the manifest:
   new FancySettings.initWithManifest(function (fancySettings) {
     console.log(fancySettings);
-    fancySettings.settings.myButton.addEvent("action", function () {
+    fancySettings.settings.myButton.addEvent("click", function () {
       alert("You clicked me!");
     });
   });

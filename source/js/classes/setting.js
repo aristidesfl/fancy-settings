@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, Setting, Text, store,
+  var Bundle, PushButton, Setting, Text, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -239,6 +239,98 @@
 
   })(Bundle);
 
+  PushButton = (function(_super) {
+
+    __extends(PushButton, _super);
+
+    function PushButton() {
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+      return PushButton.__super__.constructor.apply(this, arguments);
+    }
+
+    PushButton.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle pushbutton"
+      });
+      this.container = new Element("div", {
+        "class": "setting container pushbutton"
+      });
+      this.element = new Element("input", {
+        "class": "setting element pushbutton",
+        type: "button"
+      });
+      this.label = new Element("label", {
+        "class": "setting label pushbutton"
+      });
+      return this;
+    };
+
+    PushButton.prototype.setupDOM = function() {
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      if (this.params.value != null) {
+        this.element.set("value", this.params.value);
+        this.searchString += "" + this.params.value + "•";
+      }
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      this.element.inject(this.container);
+      this.container.inject(this.bundle);
+      return this;
+    };
+
+    PushButton.prototype.setupEvents = function() {
+      var _this = this;
+      this.element.addEvent("click", function() {
+        return _this.fireEvent("click");
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    PushButton.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    PushButton.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    return PushButton;
+
+  })(Bundle);
+
   window.Setting = Setting = (function() {
 
     function Setting(container) {
@@ -250,7 +342,8 @@
     Setting.prototype["new"] = function(params) {
       var bundle, types;
       types = {
-        text: Text
+        text: Text,
+        pushButton: PushButton
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
@@ -258,7 +351,7 @@
         bundle.bundle.inject(this.container);
         return bundle;
       } else {
-        throw "invalidType";
+        throw "Error: invalid type (" + params.type + ")";
       }
     };
 

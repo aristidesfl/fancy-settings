@@ -155,6 +155,110 @@ class Text extends Bundle
     @element.set "disabled", true
     this
 
+class PushButton extends Bundle
+  # label, value
+  # disabled, enableKey, enableValue
+  #
+  # Events: click
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle pushbutton"
+    
+    @container = new Element "div",
+      class: "setting container pushbutton"
+    
+    @element = new Element "input",
+      class: "setting element pushbutton",
+      type: "button"
+    
+    @label = new Element "label",
+      class: "setting label pushbutton"
+    
+    this
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.value?
+      @element.set "value", @params.value
+      @searchString += "#{@params.value}•"
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    @element.addEvent "click", =>
+      @fireEvent "click"
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -211,6 +315,7 @@ window.Setting = class Setting
     # Available types
     types =
       text: Text
+      pushButton: PushButton
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -218,7 +323,7 @@ window.Setting = class Setting
       bundle.bundle.inject @container
       bundle
     else
-      throw "invalidType"
+      throw "Error: invalid type (#{params.type})"
 
 
 
