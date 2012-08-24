@@ -557,13 +557,11 @@ class CheckboxBundle extends Bundle
   setupEvents: =>
     lastInput = @get()
     
-    change = =>
+    @element.addEvent "change", =>
       value = @$get()
       @set value
       lastInput = value
       @fireEvent "change", value
-    
-    @element.addEvent "change", change
     
     store.addEvent @params.name, =>
       value = @get()
@@ -612,6 +610,130 @@ class CheckboxBundle extends Bundle
     @element.set "disabled", true
     this
 
+class SliderBundle extends Bundle
+  # label, min, max, step, display, displayModifier, default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle slider"
+    
+    @container = new Element "div",
+      class: "setting container slider"
+    
+    @element = new Element "input",
+      class: "setting element slider"
+      type: "range"
+    
+    @label = new Element "label",
+      class: "setting label slider"
+    
+    @display = new Element "span",
+      class: "setting display slider"
+    
+    this
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.min?
+      @element.set "min", @params.min
+    
+    if @params.max?
+      @element.set "max", @params.max
+    
+    if @params.step?
+      @element.set "step", @params.step
+    
+    @element.inject @container
+    if @params.display
+      @display.inject @container
+    
+    @check "default", "number", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @container.inject @bundle
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    @element.addEvent "change", =>
+      value = @$get()
+      @updateDisplay value
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "number"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "number"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    Number @element.get "value"
+  
+  $set: (value) =>
+    @element.set "value", value
+    @updateDisplay value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+  
+  updateDisplay: (value) =>
+    if @params.display
+      if @params.displayModifier?
+        @display.set "text", @params.displayModifier value
+      else
+        @display.set "text", value
+    this
 
 
 
@@ -717,6 +839,7 @@ window.Setting = class Setting
       pushButton: PushButtonBundle
       label: LabelBundle
       checkbox: CheckboxBundle
+      slider: SliderBundle
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -786,118 +909,6 @@ window.Setting = class Setting
       
       if (noChangeEvent !== true) {
         this.element.fireEvent("change");
-      }
-      
-      return this;
-    }
-  });
-  
-  Bundle.Slider = new Class({
-    // label, max, min, step, display, displayModifier
-    // action -> change
-    "Extends": Bundle,
-    
-    "initialize": function (params) {
-      this.params = params;
-      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
-      
-      this.createDOM();
-      this.setupDOM();
-      this.addEvents();
-      
-      if (this.params.name !== undefined) {
-        this.set((store.get(this.params.name) || 0), true);
-      } else {
-        this.set(0, true);
-      }
-      
-      this.searchString = this.searchString.toLowerCase();
-    },
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle slider"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container slider"
-      });
-      
-      this.element = new Element("input", {
-        "class": "setting element slider",
-        "type": "range"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label slider"
-      });
-      
-      this.display = new Element("span", {
-        "class": "setting display slider"
-      });
-    },
-    
-    "setupDOM": function () {
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.container);
-        this.searchString += this.params.label + "•";
-      }
-      
-      if (this.params.max !== undefined) {
-        this.element.set("max", this.params.max);
-      }
-      
-      if (this.params.min !== undefined) {
-        this.element.set("min", this.params.min);
-      }
-      
-      if (this.params.step !== undefined) {
-        this.element.set("step", this.params.step);
-      }
-      
-      this.element.inject(this.container);
-      if (this.params.display === true) {
-        if (this.params.displayModifier !== undefined) {
-          this.display.set("text", this.params.displayModifier(0));
-        } else {
-          this.display.set("text", 0);
-        }
-        this.display.inject(this.container);
-      }
-      this.container.inject(this.bundle);
-    },
-    
-    "addEvents": function () {
-      this.element.addEvent("change", (function (event) {
-        if (this.params.name !== undefined) {
-          store.set(this.params.name, this.get());
-        }
-        
-        if (this.params.displayModifier !== undefined) {
-          this.display.set("text", this.params.displayModifier(this.get()));
-        } else {
-          this.display.set("text", this.get());
-        }
-        this.fireEvent("action", this.get());
-      }).bind(this));
-    },
-    
-    "get": function () {
-      return Number.from(this.element.get("value"));
-    },
-    
-    "set": function (value, noChangeEvent) {
-      this.element.set("value", value);
-      
-      if (noChangeEvent !== true) {
-        this.element.fireEvent("change");
-      } else {
-        if (this.params.displayModifier !== undefined) {
-          this.display.set("text", this.params.displayModifier(Number.from(value)));
-        } else {
-          this.display.set("text", Number.from(value));
-        }
       }
       
       return this;

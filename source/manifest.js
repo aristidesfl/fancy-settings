@@ -84,21 +84,21 @@ this.manifest = {
     
     
     
-    /*
+    
     {
       "tab": "Details",
       "group": "Sound",
       "name": "noti_volume",
       "type": "slider",
       "label": "Notification volume:",
-      "max": 1,
+      "max": 100,
       "min": 0,
-      "step": 0.01,
+      "step": 1,
       "display": true,
-      "displayModifier": function (value) {
-        return (value * 100).floor() + "%";
-      }
+      "default": 50
     },
+    
+    /*
     {
       "tab": "Details",
       "group": "Sound",

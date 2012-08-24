@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PushButtonBundle, Setting, TextBundle, TextareaBundle, store,
+  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PushButtonBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -782,17 +782,16 @@
     };
 
     CheckboxBundle.prototype.setupEvents = function() {
-      var change, lastInput,
+      var lastInput,
         _this = this;
       lastInput = this.get();
-      change = function() {
+      this.element.addEvent("change", function() {
         var value;
         value = _this.$get();
         _this.set(value);
         lastInput = value;
         return _this.fireEvent("change", value);
-      };
-      this.element.addEvent("change", change);
+      });
       store.addEvent(this.params.name, function() {
         var value;
         value = _this.get();
@@ -858,6 +857,177 @@
 
   })(Bundle);
 
+  SliderBundle = (function(_super) {
+
+    __extends(SliderBundle, _super);
+
+    function SliderBundle() {
+      this.updateDisplay = __bind(this.updateDisplay, this);
+
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+      return SliderBundle.__super__.constructor.apply(this, arguments);
+    }
+
+    SliderBundle.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle slider"
+      });
+      this.container = new Element("div", {
+        "class": "setting container slider"
+      });
+      this.element = new Element("input", {
+        "class": "setting element slider",
+        type: "range"
+      });
+      this.label = new Element("label", {
+        "class": "setting label slider"
+      });
+      this.display = new Element("span", {
+        "class": "setting display slider"
+      });
+      return this;
+    };
+
+    SliderBundle.prototype.setupDOM = function() {
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      if (this.params.min != null) {
+        this.element.set("min", this.params.min);
+      }
+      if (this.params.max != null) {
+        this.element.set("max", this.params.max);
+      }
+      if (this.params.step != null) {
+        this.element.set("step", this.params.step);
+      }
+      this.element.inject(this.container);
+      if (this.params.display) {
+        this.display.inject(this.container);
+      }
+      this.check("default", "number", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      this.container.inject(this.bundle);
+      return this;
+    };
+
+    SliderBundle.prototype.setupEvents = function() {
+      var lastInput,
+        _this = this;
+      lastInput = this.get();
+      this.element.addEvent("change", function() {
+        var value;
+        value = _this.$get();
+        _this.updateDisplay(value);
+        _this.set(value);
+        lastInput = value;
+        return _this.fireEvent("change", value);
+      });
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    SliderBundle.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "number") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    SliderBundle.prototype.set = function(value) {
+      if (typeOf(value) === "number") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    SliderBundle.prototype.$get = function() {
+      return Number(this.element.get("value"));
+    };
+
+    SliderBundle.prototype.$set = function(value) {
+      this.element.set("value", value);
+      this.updateDisplay(value);
+      return this;
+    };
+
+    SliderBundle.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    SliderBundle.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    SliderBundle.prototype.updateDisplay = function(value) {
+      if (this.params.display) {
+        if (this.params.displayModifier != null) {
+          this.display.set("text", this.params.displayModifier(value));
+        } else {
+          this.display.set("text", value);
+        }
+      }
+      return this;
+    };
+
+    return SliderBundle;
+
+  })(Bundle);
+
   window.Setting = Setting = (function() {
 
     function Setting(container) {
@@ -874,7 +1044,8 @@
         textarea: TextareaBundle,
         pushButton: PushButtonBundle,
         label: LabelBundle,
-        checkbox: CheckboxBundle
+        checkbox: CheckboxBundle,
+        slider: SliderBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
@@ -944,118 +1115,6 @@
         
         if (noChangeEvent !== true) {
           this.element.fireEvent("change");
-        }
-        
-        return this;
-      }
-    });
-    
-    Bundle.Slider = new Class({
-      // label, max, min, step, display, displayModifier
-      // action -> change
-      "Extends": Bundle,
-      
-      "initialize": function (params) {
-        this.params = params;
-        this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
-        
-        this.createDOM();
-        this.setupDOM();
-        this.addEvents();
-        
-        if (this.params.name !== undefined) {
-          this.set((store.get(this.params.name) || 0), true);
-        } else {
-          this.set(0, true);
-        }
-        
-        this.searchString = this.searchString.toLowerCase();
-      },
-      
-      "createDOM": function () {
-        this.bundle = new Element("div", {
-          "class": "setting bundle slider"
-        });
-        
-        this.container = new Element("div", {
-          "class": "setting container slider"
-        });
-        
-        this.element = new Element("input", {
-          "class": "setting element slider",
-          "type": "range"
-        });
-        
-        this.label = new Element("label", {
-          "class": "setting label slider"
-        });
-        
-        this.display = new Element("span", {
-          "class": "setting display slider"
-        });
-      },
-      
-      "setupDOM": function () {
-        if (this.params.label !== undefined) {
-          this.label.set("html", this.params.label);
-          this.label.inject(this.container);
-          this.searchString += this.params.label + "•";
-        }
-        
-        if (this.params.max !== undefined) {
-          this.element.set("max", this.params.max);
-        }
-        
-        if (this.params.min !== undefined) {
-          this.element.set("min", this.params.min);
-        }
-        
-        if (this.params.step !== undefined) {
-          this.element.set("step", this.params.step);
-        }
-        
-        this.element.inject(this.container);
-        if (this.params.display === true) {
-          if (this.params.displayModifier !== undefined) {
-            this.display.set("text", this.params.displayModifier(0));
-          } else {
-            this.display.set("text", 0);
-          }
-          this.display.inject(this.container);
-        }
-        this.container.inject(this.bundle);
-      },
-      
-      "addEvents": function () {
-        this.element.addEvent("change", (function (event) {
-          if (this.params.name !== undefined) {
-            store.set(this.params.name, this.get());
-          }
-          
-          if (this.params.displayModifier !== undefined) {
-            this.display.set("text", this.params.displayModifier(this.get()));
-          } else {
-            this.display.set("text", this.get());
-          }
-          this.fireEvent("action", this.get());
-        }).bind(this));
-      },
-      
-      "get": function () {
-        return Number.from(this.element.get("value"));
-      },
-      
-      "set": function (value, noChangeEvent) {
-        this.element.set("value", value);
-        
-        if (noChangeEvent !== true) {
-          this.element.fireEvent("change");
-        } else {
-          if (this.params.displayModifier !== undefined) {
-            this.display.set("text", this.params.displayModifier(Number.from(value)));
-          } else {
-            this.display.set("text", Number.from(value));
-          }
         }
         
         return this;
