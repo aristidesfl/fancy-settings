@@ -59,15 +59,17 @@ this.manifest = {
       }
     },
     
-    /*
+    
     
     {
       "tab": i18n.get("information"),
       "group": i18n.get("login"),
-      "name": "myDescription",
-      "type": "description",
-      "text": i18n.get("description")
+      "name": "myLabel",
+      "type": "label",
+      "label": i18n.get("description")
     },
+    
+    /*
     {
       "tab": i18n.get("information"),
       "group": i18n.get("logout"),

@@ -448,6 +448,61 @@ class PushButtonBundle extends Bundle
     @element.set "disabled", true
     this
 
+class LabelBundle extends Bundle
+  # label
+  # disabled, enableKey, enableValue
+  #
+  # Events: (none)
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle label"
+    
+    @container = new Element "div",
+      class: "setting container label"
+    
+    @element = new Element "div",
+      class: "setting element label"
+    
+    this
+  
+  setupDOM: =>
+    @searchString = ""
+    
+    if @params.label?
+      @element.set "html", @params.label
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    this
 
 
 
@@ -542,6 +597,7 @@ window.Setting = class Setting
       number: NumberBundle
       textarea: TextareaBundle
       pushButton: PushButtonBundle
+      label: LabelBundle
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -617,170 +673,6 @@ window.Setting = class Setting
     }
   });
   
-  Bundle.Description = new Class({
-    // text
-    "Extends": Bundle,
-    "addEvents": undefined,
-    "get": undefined,
-    "set": undefined,
-    
-    "initialize": function (params) {
-      this.params = params;
-      this.searchString = "";
-      
-      this.createDOM();
-      this.setupDOM();
-    },
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle description"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container description"
-      });
-      
-      this.element = new Element("p", {
-        "class": "setting element description"
-      });
-    },
-    
-    "setupDOM": function () {
-      if (this.params.text !== undefined) {
-        this.element.set("html", this.params.text);
-      }
-      
-      this.element.inject(this.container);
-      this.container.inject(this.bundle);
-    }
-  });
-  
-  Bundle.Button = new Class({
-    // label, text
-    // action -> click
-    "Extends": Bundle,
-    "get": undefined,
-    "set": undefined,
-    
-    "initialize": function (params) {
-      this.params = params;
-      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
-      
-      this.createDOM();
-      this.setupDOM();
-      this.addEvents();
-      
-      this.searchString = this.searchString.toLowerCase();
-    },
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle button"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container button"
-      });
-      
-      this.element = new Element("input", {
-        "class": "setting element button",
-        "type": "button"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label button"
-      });
-    },
-    
-    "setupDOM": function () {
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.container);
-        this.searchString += this.params.label + "•";
-      }
-      
-      if (this.params.text !== undefined) {
-        this.element.set("value", this.params.text);
-        this.searchString += this.params.text + "•";
-      }
-      
-      this.element.inject(this.container);
-      this.container.inject(this.bundle);
-    },
-    
-    "addEvents": function () {
-      this.element.addEvent("click", (function () {
-        this.fireEvent("action");
-      }).bind(this));
-    }
-  });
-  
-  Bundle.Text = new Class({
-    // label, text, masked, default
-    // action -> change & keyup
-    "Extends": Bundle,
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle text"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container text"
-      });
-      
-      this.element = new Element("input", {
-        "class": "setting element text",
-        "type": "text"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label text"
-      });
-    },
-    
-    "setupDOM": function () {
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.container);
-        this.searchString += this.params.label + "•";
-      }
-      
-      if (this.params.text !== undefined) {
-        this.element.set("placeholder", this.params.text);
-        this.searchString += this.params.text + "•";
-      }
-      
-      if (this.params.masked === true) {
-        this.element.set("type", "password");
-        this.searchString += "password" + "•";
-      }
-      
-      if (this.params.default !== undefined) {
-        if (!this.get()) {
-          console.log("jop");
-          this.set(this.default);
-        }
-      }
-      
-      this.element.inject(this.container);
-      this.container.inject(this.bundle);
-    },
-    
-    "addEvents": function () {
-      var change = (function (event) {
-        if (this.params.name !== undefined) {
-          store.set(this.params.name, this.get());
-        }
-        
-        this.fireEvent("action", this.get());
-      }).bind(this);
-      
-      this.element.addEvent("change", change);
-      this.element.addEvent("keyup", change);
-    }
-  });
   
   Bundle.Checkbox = new Class({
     // label
