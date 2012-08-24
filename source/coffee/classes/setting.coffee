@@ -735,6 +735,130 @@ class SliderBundle extends Bundle
         @display.set "text", value
     this
 
+class PopupButtonBundle extends Bundle
+  # label, options[[value, label, group*], ...], default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  constructor: (@params) ->
+    @groups = {}
+    super(@params)
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle popupbutton"
+    
+    @container = new Element "div",
+      class: "setting container popupbutton"
+    
+    @element = new Element "select",
+      class: "setting element popupbutton"
+    
+    @label = new Element "label",
+      class: "setting label popupbutton"
+    
+    this
+  
+  getGroup: (name) =>
+    return @groups[name] if @groups[name]?
+    
+    # Create new group
+    group = (new Element "optgroup",
+      label: name
+    ).inject @element
+    @groups[name] = group
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.options?
+      @params.options.each (params) =>
+        option = new Element "option",
+          value: params[0]
+          text: params[1] or params[0]
+        
+        if params[2]?
+          option.inject @getGroup params[2]
+        else
+          option.inject @element
+    
+    @check "default", "string", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    @element.addEvent "change", =>
+      value = @$get()
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "string"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "string"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    @element.get "value"
+  
+  $set: (value) =>
+    @element.set "value", value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
 
 
 
@@ -840,6 +964,7 @@ window.Setting = class Setting
       label: LabelBundle
       checkbox: CheckboxBundle
       slider: SliderBundle
+      popupButton: PopupButtonBundle
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -912,103 +1037,6 @@ window.Setting = class Setting
       }
       
       return this;
-    }
-  });
-  
-  Bundle.PopupButton = new Class({
-    // label, options[{value, text}]
-    // action -> change
-    "Extends": Bundle,
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle popup-button"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container popup-button"
-      });
-      
-      this.element = new Element("select", {
-        "class": "setting element popup-button"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label popup-button"
-      });
-      
-      if (this.params.options === undefined) { return; }
-
-      // convert array syntax into object syntax for options
-      function arrayToObject(option) {
-        if (typeOf(option) == "array") {
-          option = {
-            "value": option[0],
-            "text": option[1] || option[0],
-          };
-        }
-        return option;
-      }
-
-      // convert arrays
-      if (typeOf(this.params.options) == "array") {
-        var values = [];
-        this.params.options.each((function(values, option) {
-          values.push(arrayToObject(option));
-        }).bind(this, values));
-        this.params.options = { "values": values };
-      }
-
-      var groups;
-      if (this.params.options.groups !== undefined) {
-        groups = {};
-        this.params.options.groups.each((function (groups, group) {
-          this.searchString += (group) + "•";
-          groups[group] = (new Element("optgroup", {
-            "label": group,
-          }).inject(this.element));
-        }).bind(this, groups));
-      }
-
-      if (this.params.options.values !== undefined) {
-        this.params.options.values.each((function(groups, option) {
-          option = arrayToObject(option);
-          this.searchString += (option.text || option.value) + "•";
-
-          // find the parent of this option - either a group or the main element
-          var parent;
-          if (option.group && this.params.options.groups) {
-            if ((option.group - 1) in this.params.options.groups) {
-              option.group = this.params.options.groups[option.group-1];
-            }
-            if (option.group in groups) {
-              parent = groups[option.group];
-            }
-            else {
-              parent = this.element;
-            }
-          }
-          else {
-            parent = this.element;
-          }
-
-          (new Element("option", {
-            "value": option.value,
-            "text": option.text || option.value,
-          })).inject(parent);
-        }).bind(this, groups));
-      }
-    },
-    
-    "setupDOM": function () {
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.container);
-        this.searchString += this.params.label + "•";
-      }
-      
-      this.element.inject(this.container);
-      this.container.inject(this.bundle);
     }
   });
   

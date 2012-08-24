@@ -97,6 +97,21 @@ this.manifest = {
       "display": true,
       "default": 50
     },
+    {
+      "tab": "Details",
+      "group": "Food",
+      "name": "myPopupButton",
+      "type": "popupButton",
+      "label": "Soup 1 should be:",
+      "options": [
+        ["hot", "Hot and yummy", "one"],
+        ["cold", "Cold and ugly", "two"],
+        ["cold2", "Cold and ugly 2", "two"],
+        ["nothing"]
+      ],
+      "default": "cold",
+      "disabled": false
+    },
     
     /*
     {
@@ -113,17 +128,7 @@ this.manifest = {
         return value + "%";
       }
     },
-    {
-      "tab": "Details",
-      "group": "Food",
-      "name": "myPopupButton",
-      "type": "popupButton",
-      "label": "Soup 1 should be:",
-      "options": [
-        ["hot", "Hot and yummy"],
-        ["cold"]
-      ]
-    },
+    
     {
       "tab": "Details",
       "group": "Food",

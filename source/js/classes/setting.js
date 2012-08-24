@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PushButtonBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
+  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PopupButtonBundle, PushButtonBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1028,6 +1028,177 @@
 
   })(Bundle);
 
+  PopupButtonBundle = (function(_super) {
+
+    __extends(PopupButtonBundle, _super);
+
+    function PopupButtonBundle(params) {
+      this.params = params;
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.getGroup = __bind(this.getGroup, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+
+      this.groups = {};
+      PopupButtonBundle.__super__.constructor.call(this, this.params);
+    }
+
+    PopupButtonBundle.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle popupbutton"
+      });
+      this.container = new Element("div", {
+        "class": "setting container popupbutton"
+      });
+      this.element = new Element("select", {
+        "class": "setting element popupbutton"
+      });
+      this.label = new Element("label", {
+        "class": "setting label popupbutton"
+      });
+      return this;
+    };
+
+    PopupButtonBundle.prototype.getGroup = function(name) {
+      var group;
+      if (this.groups[name] != null) {
+        return this.groups[name];
+      }
+      group = (new Element("optgroup", {
+        label: name
+      })).inject(this.element);
+      return this.groups[name] = group;
+    };
+
+    PopupButtonBundle.prototype.setupDOM = function() {
+      var _this = this;
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      if (this.params.options != null) {
+        this.params.options.each(function(params) {
+          var option;
+          option = new Element("option", {
+            value: params[0],
+            text: params[1] || params[0]
+          });
+          if (params[2] != null) {
+            return option.inject(_this.getGroup(params[2]));
+          } else {
+            return option.inject(_this.element);
+          }
+        });
+      }
+      this.check("default", "string", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      this.element.inject(this.container);
+      this.container.inject(this.bundle);
+      return this;
+    };
+
+    PopupButtonBundle.prototype.setupEvents = function() {
+      var lastInput,
+        _this = this;
+      lastInput = this.get();
+      this.element.addEvent("change", function() {
+        var value;
+        value = _this.$get();
+        _this.set(value);
+        lastInput = value;
+        return _this.fireEvent("change", value);
+      });
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    PopupButtonBundle.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "string") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    PopupButtonBundle.prototype.set = function(value) {
+      if (typeOf(value) === "string") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    PopupButtonBundle.prototype.$get = function() {
+      return this.element.get("value");
+    };
+
+    PopupButtonBundle.prototype.$set = function(value) {
+      this.element.set("value", value);
+      return this;
+    };
+
+    PopupButtonBundle.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    PopupButtonBundle.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    return PopupButtonBundle;
+
+  })(Bundle);
+
   window.Setting = Setting = (function() {
 
     function Setting(container) {
@@ -1045,7 +1216,8 @@
         pushButton: PushButtonBundle,
         label: LabelBundle,
         checkbox: CheckboxBundle,
-        slider: SliderBundle
+        slider: SliderBundle,
+        popupButton: PopupButtonBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
@@ -1118,103 +1290,6 @@
         }
         
         return this;
-      }
-    });
-    
-    Bundle.PopupButton = new Class({
-      // label, options[{value, text}]
-      // action -> change
-      "Extends": Bundle,
-      
-      "createDOM": function () {
-        this.bundle = new Element("div", {
-          "class": "setting bundle popup-button"
-        });
-        
-        this.container = new Element("div", {
-          "class": "setting container popup-button"
-        });
-        
-        this.element = new Element("select", {
-          "class": "setting element popup-button"
-        });
-        
-        this.label = new Element("label", {
-          "class": "setting label popup-button"
-        });
-        
-        if (this.params.options === undefined) { return; }
-  
-        // convert array syntax into object syntax for options
-        function arrayToObject(option) {
-          if (typeOf(option) == "array") {
-            option = {
-              "value": option[0],
-              "text": option[1] || option[0],
-            };
-          }
-          return option;
-        }
-  
-        // convert arrays
-        if (typeOf(this.params.options) == "array") {
-          var values = [];
-          this.params.options.each((function(values, option) {
-            values.push(arrayToObject(option));
-          }).bind(this, values));
-          this.params.options = { "values": values };
-        }
-  
-        var groups;
-        if (this.params.options.groups !== undefined) {
-          groups = {};
-          this.params.options.groups.each((function (groups, group) {
-            this.searchString += (group) + "•";
-            groups[group] = (new Element("optgroup", {
-              "label": group,
-            }).inject(this.element));
-          }).bind(this, groups));
-        }
-  
-        if (this.params.options.values !== undefined) {
-          this.params.options.values.each((function(groups, option) {
-            option = arrayToObject(option);
-            this.searchString += (option.text || option.value) + "•";
-  
-            // find the parent of this option - either a group or the main element
-            var parent;
-            if (option.group && this.params.options.groups) {
-              if ((option.group - 1) in this.params.options.groups) {
-                option.group = this.params.options.groups[option.group-1];
-              }
-              if (option.group in groups) {
-                parent = groups[option.group];
-              }
-              else {
-                parent = this.element;
-              }
-            }
-            else {
-              parent = this.element;
-            }
-  
-            (new Element("option", {
-              "value": option.value,
-              "text": option.text || option.value,
-            })).inject(parent);
-          }).bind(this, groups));
-        }
-      },
-      
-      "setupDOM": function () {
-        if (this.params.label !== undefined) {
-          this.label.set("html", this.params.label);
-          this.label.inject(this.container);
-          this.searchString += this.params.label + "•";
-        }
-        
-        this.element.inject(this.container);
-        this.container.inject(this.bundle);
       }
     });
     
