@@ -4,7 +4,7 @@
 ## https://github.com/frankkohlhepp/fancy-settings
 ## License: MIT-license
 ###
-store = new Store "settings"
+store = new Store "settings", null, 70
 
 class Bundle
   constructor: (@params) ->
