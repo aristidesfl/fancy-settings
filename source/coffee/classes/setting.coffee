@@ -777,6 +777,7 @@ class PopupButtonBundle extends Bundle
     
     if @params.options?
       @params.options.each (params) =>
+        @searchString += "#{params[1] or params[0]}•"
         option = new Element "option",
           value: params[0]
           text: params[1] or params[0]
@@ -859,98 +860,160 @@ class PopupButtonBundle extends Bundle
     @element.set "disabled", true
     this
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class RadioButtonsBundle extends Bundle
+  # label, options[[value, label, group*], ...], default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  constructor: (@params) ->
+    @groups = {}
+    @containers = {}
+    @elements = {}
+    @labels = {}
+    super(@params)
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle radiobuttons"
+    
+    @label = new Element "label",
+      class: "setting label radiobuttons"
+    
+    this
+  
+  getGroup: (name) =>
+    return @groups[name] if @groups[name]?
+    
+    # Create new group
+    group = (new Element "div",
+      class: "setting element-group radiobuttons"
+    ).inject @bundle
+    
+    group.name = (new Element "div",
+      class: "setting element-group-name radiobuttons"
+      text: name
+    ).inject group
+    
+    group.content = (new Element "div",
+      class: "setting element-group-content radiobuttons"
+    ).inject group
+    
+    @groups[name] = group
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @bundle
+      @searchString += "#{@params.label}•"
+    
+    settingID = String.uniqueID()
+    if @params.options?
+      @params.options.each (params) =>
+        @searchString += "#{params[1] or params[0]}•"
+        optionID = String.uniqueID()
+        
+        container = @containers[params[0]] = new Element "div",
+          class: "setting container radiobuttons"
+        
+        @elements[params[0]] = (new Element "input",
+          id: optionID
+          name: settingID
+          class: "setting element radiobuttons"
+          type: "radio"
+          value: params[0]
+        ).inject container
+        
+        @labels[params[0]] = (new Element "label",
+          class: "setting element-label radiobuttons"
+          for: optionID
+          text: params[1] or params[0]
+        ).inject container
+        
+        if params[2]?
+          container.inject @getGroup params[2]
+        else
+          container.inject @bundle
+    
+    @check "default", "string", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    Object.each @elements, (element) =>
+      element.addEvent "change", =>
+        value = @$get()
+        @set value
+        lastInput = value
+        @fireEvent "change", value
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "string"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "string"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    checkedElements = Object.values(@elements).filter (element) =>
+      element.get "checked"
+    if checkedElements.getLast()?
+      checkedElements.getLast().get "value"
+    else
+      ""
+  
+  $set: (value) =>
+    Object.each @elements, (element) =>
+      if element.get("value") is value
+        element.set "checked", true
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    Object.each @elements, (element) =>
+      element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    Object.each @elements, (element) =>
+      element.set "disabled", true
+    this
 
 window.Setting = class Setting
   constructor: (@container) ->
@@ -965,6 +1028,7 @@ window.Setting = class Setting
       checkbox: CheckboxBundle
       slider: SliderBundle
       popupButton: PopupButtonBundle
+      radioButtons: RadioButtonsBundle
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -973,159 +1037,3 @@ window.Setting = class Setting
       bundle
     else
       throw "Error: invalid type (#{params.type})"
-
-
-
-
-
-
-
-###
-`
-
-  var store = new Store("settings");
-  var Bundle = new Class({
-    // Attributes:
-    // - tab
-    // - group
-    // - name
-    // - type
-    //
-    // Methods:
-    //  - initialize
-    //  - createDOM
-    //  - setupDOM
-    //  - addEvents
-    //  - get
-    //  - set
-    "Implements": Events,
-    
-    "initialize": function (params) {
-      this.params = params;
-      this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
-      
-      this.createDOM();
-      this.setupDOM();
-      this.addEvents();
-      
-      if (this.params.name !== undefined) {
-        this.set(store.get(this.params.name), true);
-      }
-      
-      this.searchString = this.searchString.toLowerCase();
-    },
-    
-    "addEvents": function () {
-      this.element.addEvent("change", (function (event) {
-        if (this.params.name !== undefined) {
-          store.set(this.params.name, this.get());
-        }
-        
-        this.fireEvent("action", this.get());
-      }).bind(this));
-    },
-    
-    "get": function () {
-      return this.element.get("value");
-    },
-    
-    "set": function (value, noChangeEvent) {
-      this.element.set("value", value);
-      
-      if (noChangeEvent !== true) {
-        this.element.fireEvent("change");
-      }
-      
-      return this;
-    }
-  });
-  
-  Bundle.RadioButtons = new Class({
-    // label, options[{value, text}]
-    // action -> change
-    "Extends": Bundle,
-    
-    "createDOM": function () {
-      var settingID = String.uniqueID();
-      
-      this.bundle = new Element("div", {
-        "class": "setting bundle radio-buttons"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label radio-buttons"
-      });
-      
-      this.containers = [];
-      this.elements = [];
-      this.labels = [];
-      
-      if (this.params.options === undefined) { return; }
-      this.params.options.each((function (option) {
-        this.searchString += (option[1] || option[0]) + "•";
-        
-        var optionID = String.uniqueID();
-        var container = (new Element("div", {
-          "class": "setting container radio-buttons"
-        })).inject(this.bundle);
-        this.containers.push(container);
-        
-        this.elements.push((new Element("input", {
-          "id": optionID,
-          "name": settingID,
-          "class": "setting element radio-buttons",
-          "type": "radio",
-          "value": option[0]
-        })).inject(container));
-        
-        this.labels.push((new Element("label", {
-          "class": "setting element-label radio-buttons",
-          "for": optionID,
-          "text": option[1] || option[0]
-        })).inject(container));
-      }).bind(this));
-    },
-    
-    "setupDOM": function () {
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.bundle, "top");
-        this.searchString += this.params.label + "•";
-      }
-    },
-    
-    "addEvents": function () {
-      this.bundle.addEvent("change", (function (event) {
-        if (this.params.name !== undefined) {
-          store.set(this.params.name, this.get());
-        }
-        
-        this.fireEvent("action", this.get());
-      }).bind(this));
-    },
-    
-    "get": function () {
-      var checkedEl = this.elements.filter((function (el) {
-        return el.get("checked");
-      }).bind(this));
-      return (checkedEl[0] && checkedEl[0].get("value"));
-    },
-    
-    "set": function (value, noChangeEvent) {
-      var desiredEl = this.elements.filter((function (el) {
-        return (el.get("value") === value);
-      }).bind(this));
-      desiredEl[0] && desiredEl[0].set("checked", true);
-      
-      if (noChangeEvent !== true) {
-        this.bundle.fireEvent("change");
-      }
-      
-      return this;
-    }
-  });
-  
-
-
-`
-###

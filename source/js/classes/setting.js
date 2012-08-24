@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PopupButtonBundle, PushButtonBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
+  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PopupButtonBundle, PushButtonBundle, RadioButtonsBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1095,6 +1095,7 @@
       if (this.params.options != null) {
         this.params.options.each(function(params) {
           var option;
+          _this.searchString += "" + (params[1] || params[0]) + "•";
           option = new Element("option", {
             value: params[0],
             text: params[1] || params[0]
@@ -1199,6 +1200,216 @@
 
   })(Bundle);
 
+  RadioButtonsBundle = (function(_super) {
+
+    __extends(RadioButtonsBundle, _super);
+
+    function RadioButtonsBundle(params) {
+      this.params = params;
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.getGroup = __bind(this.getGroup, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+
+      this.groups = {};
+      this.containers = {};
+      this.elements = {};
+      this.labels = {};
+      RadioButtonsBundle.__super__.constructor.call(this, this.params);
+    }
+
+    RadioButtonsBundle.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle radiobuttons"
+      });
+      this.label = new Element("label", {
+        "class": "setting label radiobuttons"
+      });
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.getGroup = function(name) {
+      var group;
+      if (this.groups[name] != null) {
+        return this.groups[name];
+      }
+      group = (new Element("div", {
+        "class": "setting element-group radiobuttons"
+      })).inject(this.bundle);
+      group.name = (new Element("div", {
+        "class": "setting element-group-name radiobuttons",
+        text: name
+      })).inject(group);
+      group.content = (new Element("div", {
+        "class": "setting element-group-content radiobuttons"
+      })).inject(group);
+      return this.groups[name] = group;
+    };
+
+    RadioButtonsBundle.prototype.setupDOM = function() {
+      var settingID,
+        _this = this;
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.bundle);
+        this.searchString += "" + this.params.label + "•";
+      }
+      settingID = String.uniqueID();
+      if (this.params.options != null) {
+        this.params.options.each(function(params) {
+          var container, optionID;
+          _this.searchString += "" + (params[1] || params[0]) + "•";
+          optionID = String.uniqueID();
+          container = _this.containers[params[0]] = new Element("div", {
+            "class": "setting container radiobuttons"
+          });
+          _this.elements[params[0]] = (new Element("input", {
+            id: optionID,
+            name: settingID,
+            "class": "setting element radiobuttons",
+            type: "radio",
+            value: params[0]
+          })).inject(container);
+          _this.labels[params[0]] = (new Element("label", {
+            "class": "setting element-label radiobuttons",
+            "for": optionID,
+            text: params[1] || params[0]
+          })).inject(container);
+          if (params[2] != null) {
+            return container.inject(_this.getGroup(params[2]));
+          } else {
+            return container.inject(_this.bundle);
+          }
+        });
+      }
+      this.check("default", "string", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.setupEvents = function() {
+      var lastInput,
+        _this = this;
+      lastInput = this.get();
+      Object.each(this.elements, function(element) {
+        return element.addEvent("change", function() {
+          var value;
+          value = _this.$get();
+          _this.set(value);
+          lastInput = value;
+          return _this.fireEvent("change", value);
+        });
+      });
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "string") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    RadioButtonsBundle.prototype.set = function(value) {
+      if (typeOf(value) === "string") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.$get = function() {
+      var checkedElements,
+        _this = this;
+      checkedElements = Object.values(this.elements).filter(function(element) {
+        return element.get("checked");
+      });
+      if (checkedElements.getLast() != null) {
+        return checkedElements.getLast().get("value");
+      } else {
+        return "";
+      }
+    };
+
+    RadioButtonsBundle.prototype.$set = function(value) {
+      var _this = this;
+      Object.each(this.elements, function(element) {
+        if (element.get("value") === value) {
+          return element.set("checked", true);
+        }
+      });
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.enable = function() {
+      var _this = this;
+      this.bundle.removeClass("disabled");
+      Object.each(this.elements, function(element) {
+        return element.set("disabled", false);
+      });
+      return this;
+    };
+
+    RadioButtonsBundle.prototype.disable = function() {
+      var _this = this;
+      this.bundle.addClass("disabled");
+      Object.each(this.elements, function(element) {
+        return element.set("disabled", true);
+      });
+      return this;
+    };
+
+    return RadioButtonsBundle;
+
+  })(Bundle);
+
   window.Setting = Setting = (function() {
 
     function Setting(container) {
@@ -1217,7 +1428,8 @@
         label: LabelBundle,
         checkbox: CheckboxBundle,
         slider: SliderBundle,
-        popupButton: PopupButtonBundle
+        popupButton: PopupButtonBundle,
+        radioButtons: RadioButtonsBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
@@ -1232,156 +1444,5 @@
     return Setting;
 
   })();
-
-  /*
-  `
-  
-    var store = new Store("settings");
-    var Bundle = new Class({
-      // Attributes:
-      // - tab
-      // - group
-      // - name
-      // - type
-      //
-      // Methods:
-      //  - initialize
-      //  - createDOM
-      //  - setupDOM
-      //  - addEvents
-      //  - get
-      //  - set
-      "Implements": Events,
-      
-      "initialize": function (params) {
-        this.params = params;
-        this.searchString = "•" + this.params.tab + "•" + this.params.group + "•";
-        
-        this.createDOM();
-        this.setupDOM();
-        this.addEvents();
-        
-        if (this.params.name !== undefined) {
-          this.set(store.get(this.params.name), true);
-        }
-        
-        this.searchString = this.searchString.toLowerCase();
-      },
-      
-      "addEvents": function () {
-        this.element.addEvent("change", (function (event) {
-          if (this.params.name !== undefined) {
-            store.set(this.params.name, this.get());
-          }
-          
-          this.fireEvent("action", this.get());
-        }).bind(this));
-      },
-      
-      "get": function () {
-        return this.element.get("value");
-      },
-      
-      "set": function (value, noChangeEvent) {
-        this.element.set("value", value);
-        
-        if (noChangeEvent !== true) {
-          this.element.fireEvent("change");
-        }
-        
-        return this;
-      }
-    });
-    
-    Bundle.RadioButtons = new Class({
-      // label, options[{value, text}]
-      // action -> change
-      "Extends": Bundle,
-      
-      "createDOM": function () {
-        var settingID = String.uniqueID();
-        
-        this.bundle = new Element("div", {
-          "class": "setting bundle radio-buttons"
-        });
-        
-        this.label = new Element("label", {
-          "class": "setting label radio-buttons"
-        });
-        
-        this.containers = [];
-        this.elements = [];
-        this.labels = [];
-        
-        if (this.params.options === undefined) { return; }
-        this.params.options.each((function (option) {
-          this.searchString += (option[1] || option[0]) + "•";
-          
-          var optionID = String.uniqueID();
-          var container = (new Element("div", {
-            "class": "setting container radio-buttons"
-          })).inject(this.bundle);
-          this.containers.push(container);
-          
-          this.elements.push((new Element("input", {
-            "id": optionID,
-            "name": settingID,
-            "class": "setting element radio-buttons",
-            "type": "radio",
-            "value": option[0]
-          })).inject(container));
-          
-          this.labels.push((new Element("label", {
-            "class": "setting element-label radio-buttons",
-            "for": optionID,
-            "text": option[1] || option[0]
-          })).inject(container));
-        }).bind(this));
-      },
-      
-      "setupDOM": function () {
-        if (this.params.label !== undefined) {
-          this.label.set("html", this.params.label);
-          this.label.inject(this.bundle, "top");
-          this.searchString += this.params.label + "•";
-        }
-      },
-      
-      "addEvents": function () {
-        this.bundle.addEvent("change", (function (event) {
-          if (this.params.name !== undefined) {
-            store.set(this.params.name, this.get());
-          }
-          
-          this.fireEvent("action", this.get());
-        }).bind(this));
-      },
-      
-      "get": function () {
-        var checkedEl = this.elements.filter((function (el) {
-          return el.get("checked");
-        }).bind(this));
-        return (checkedEl[0] && checkedEl[0].get("value"));
-      },
-      
-      "set": function (value, noChangeEvent) {
-        var desiredEl = this.elements.filter((function (el) {
-          return (el.get("value") === value);
-        }).bind(this));
-        desiredEl[0] && desiredEl[0].set("checked", true);
-        
-        if (noChangeEvent !== true) {
-          this.bundle.fireEvent("change");
-        }
-        
-        return this;
-      }
-    });
-    
-  
-  
-  `
-  */
-
 
 }).call(this);

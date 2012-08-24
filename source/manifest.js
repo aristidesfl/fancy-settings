@@ -113,7 +113,7 @@ this.manifest = {
       "disabled": false
     },
     
-    /*
+    
     {
       "tab": "Details",
       "group": "Sound",
@@ -126,7 +126,8 @@ this.manifest = {
       "display": true,
       "displayModifier": function (value) {
         return value + "%";
-      }
+      },
+      "default": 0
     },
     
     {
@@ -136,10 +137,14 @@ this.manifest = {
       "type": "radioButtons",
       "label": "Soup 3 should be:",
       "options": [
-        ["hot", "Hot and yummy"],
-        ["cold"]
-      ]
-    }*/
+        ["hot", "Hot and yummy", "one"],
+        ["cold", "Cold and ugly", "two"],
+        ["cold2", "Cold and ugly 2", "two"],
+        ["nothing"]
+      ],
+      "default": "cold",
+      "disabled": false
+    }
   ],
   /*"alignment": [
     [
