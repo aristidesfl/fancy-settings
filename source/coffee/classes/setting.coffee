@@ -57,7 +57,7 @@ class TextBundle extends Bundle
       class: "setting container text"
     
     @element = new Element "input",
-      class: "setting element text",
+      class: "setting element text"
       type: "text"
     
     @label = new Element "label",
@@ -169,7 +169,7 @@ class NumberBundle extends Bundle
       class: "setting container number"
     
     @element = new Element "input",
-      class: "setting element number",
+      class: "setting element number"
       type: "number"
     
     @label = new Element "label",
@@ -393,7 +393,7 @@ class PushButtonBundle extends Bundle
       class: "setting container pushbutton"
     
     @element = new Element "input",
-      class: "setting element pushbutton",
+      class: "setting element pushbutton"
       type: "button"
     
     @label = new Element "label",
@@ -504,6 +504,124 @@ class LabelBundle extends Bundle
     @bundle.addClass "disabled"
     this
 
+class CheckboxBundle extends Bundle
+  # label, default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  createDOM: =>
+    id = String.uniqueID()
+    
+    @bundle = new Element "div",
+      class: "setting bundle checkbox"
+    
+    @container = new Element "div",
+      class: "setting container checkbox"
+    
+    @element = new Element "input",
+      id: id
+      class: "setting element checkbox"
+      type: "checkbox"
+      value: "true"
+    
+    @label = new Element "label",
+      class: "setting label checkbox"
+      for: id
+    
+    this
+  
+  setupDOM: =>
+    @element.inject @container
+    @container.inject @bundle
+    
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    @check "default", "boolean", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    change = =>
+      value = @$get()
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    @element.addEvent "change", change
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "boolean"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "boolean"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    @element.get "checked"
+  
+  $set: (value) =>
+    @element.set "checked", value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -598,6 +716,7 @@ window.Setting = class Setting
       textarea: TextareaBundle
       pushButton: PushButtonBundle
       label: LabelBundle
+      checkbox: CheckboxBundle
     
     if types[params.type]?
       bundle = new types[params.type] params
@@ -664,60 +783,6 @@ window.Setting = class Setting
     
     "set": function (value, noChangeEvent) {
       this.element.set("value", value);
-      
-      if (noChangeEvent !== true) {
-        this.element.fireEvent("change");
-      }
-      
-      return this;
-    }
-  });
-  
-  
-  Bundle.Checkbox = new Class({
-    // label
-    // action -> change
-    "Extends": Bundle,
-    
-    "createDOM": function () {
-      this.bundle = new Element("div", {
-        "class": "setting bundle checkbox"
-      });
-      
-      this.container = new Element("div", {
-        "class": "setting container checkbox"
-      });
-      
-      this.element = new Element("input", {
-        "id": String.uniqueID(),
-        "class": "setting element checkbox",
-        "type": "checkbox",
-        "value": "true"
-      });
-      
-      this.label = new Element("label", {
-        "class": "setting label checkbox",
-        "for": this.element.get("id")
-      });
-    },
-    
-    "setupDOM": function () {
-      this.element.inject(this.container);
-      this.container.inject(this.bundle);
-      
-      if (this.params.label !== undefined) {
-        this.label.set("html", this.params.label);
-        this.label.inject(this.container);
-        this.searchString += this.params.label + "•";
-      }
-    },
-    
-    "get": function () {
-      return this.element.get("checked");
-    },
-    
-    "set": function (value, noChangeEvent) {
-      this.element.set("checked", value);
       
       if (noChangeEvent !== true) {
         this.element.fireEvent("change");

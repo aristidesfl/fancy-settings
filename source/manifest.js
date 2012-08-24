@@ -4,12 +4,23 @@ this.manifest = {
   "settings": [
     {
       "tab": i18n.get("information"),
+      "group": i18n.get("logout"),
+      "name": "myCheckbox",
+      "type": "checkbox",
+      "label": i18n.get("enable"),
+      "default": false
+    },
+    
+    {
+      "tab": i18n.get("information"),
       "group": i18n.get("login"),
       "name": "username",
       "type": "text",
       "label": i18n.get("username"),
       "placeholder": i18n.get("x-characters"),
-      "default": "My Username"
+      "default": "My Username",
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
     {
       "tab": i18n.get("information"),
@@ -20,10 +31,8 @@ this.manifest = {
       "placeholder": i18n.get("x-characters-pw"),
       "masked": true,
       "default": "",
-      "enableKey": "username",
-      "enableValue": function (string) {
-        return string.length > 0;
-      }
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
     {
       "tab": i18n.get("information"),
@@ -35,7 +44,9 @@ this.manifest = {
       "default": 45,
       "min": 0,
       "max": 100,
-      "step": 5
+      "step": 5,
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
     {
       "tab": i18n.get("information"),
@@ -44,7 +55,9 @@ this.manifest = {
       "type": "textarea",
       "label": "Additional Information:",
       "placeholder": i18n.get("x-characters"),
-      "default": ""
+      "default": "",
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
     {
       "tab": i18n.get("information"),
@@ -53,10 +66,8 @@ this.manifest = {
       "type": "pushButton",
       "label": i18n.get("disconnect"),
       "value": i18n.get("logout"),
-      "enableKey": "username",
-      "enableValue": function (string) {
-        return string.length > 0;
-      }
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
     
     
@@ -66,18 +77,14 @@ this.manifest = {
       "group": i18n.get("login"),
       "name": "myLabel",
       "type": "label",
-      "label": i18n.get("description")
+      "label": i18n.get("description"),
+      "enableKey": "myCheckbox",
+      "enableValue": true
     },
+    
+    
     
     /*
-    {
-      "tab": i18n.get("information"),
-      "group": i18n.get("logout"),
-      "name": "myCheckbox",
-      "type": "checkbox",
-      "label": i18n.get("enable")
-    },
-    
     {
       "tab": "Details",
       "group": "Sound",

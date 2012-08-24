@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, LabelBundle, NumberBundle, PushButtonBundle, Setting, TextBundle, TextareaBundle, store,
+  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PushButtonBundle, Setting, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -711,6 +711,153 @@
 
   })(Bundle);
 
+  CheckboxBundle = (function(_super) {
+
+    __extends(CheckboxBundle, _super);
+
+    function CheckboxBundle() {
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+      return CheckboxBundle.__super__.constructor.apply(this, arguments);
+    }
+
+    CheckboxBundle.prototype.createDOM = function() {
+      var id;
+      id = String.uniqueID();
+      this.bundle = new Element("div", {
+        "class": "setting bundle checkbox"
+      });
+      this.container = new Element("div", {
+        "class": "setting container checkbox"
+      });
+      this.element = new Element("input", {
+        id: id,
+        "class": "setting element checkbox",
+        type: "checkbox",
+        value: "true"
+      });
+      this.label = new Element("label", {
+        "class": "setting label checkbox",
+        "for": id
+      });
+      return this;
+    };
+
+    CheckboxBundle.prototype.setupDOM = function() {
+      this.element.inject(this.container);
+      this.container.inject(this.bundle);
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      this.check("default", "boolean", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      return this;
+    };
+
+    CheckboxBundle.prototype.setupEvents = function() {
+      var change, lastInput,
+        _this = this;
+      lastInput = this.get();
+      change = function() {
+        var value;
+        value = _this.$get();
+        _this.set(value);
+        lastInput = value;
+        return _this.fireEvent("change", value);
+      };
+      this.element.addEvent("change", change);
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    CheckboxBundle.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "boolean") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    CheckboxBundle.prototype.set = function(value) {
+      if (typeOf(value) === "boolean") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    CheckboxBundle.prototype.$get = function() {
+      return this.element.get("checked");
+    };
+
+    CheckboxBundle.prototype.$set = function(value) {
+      this.element.set("checked", value);
+      return this;
+    };
+
+    CheckboxBundle.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    CheckboxBundle.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    return CheckboxBundle;
+
+  })(Bundle);
+
   window.Setting = Setting = (function() {
 
     function Setting(container) {
@@ -726,7 +873,8 @@
         number: NumberBundle,
         textarea: TextareaBundle,
         pushButton: PushButtonBundle,
-        label: LabelBundle
+        label: LabelBundle,
+        checkbox: CheckboxBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
@@ -793,60 +941,6 @@
       
       "set": function (value, noChangeEvent) {
         this.element.set("value", value);
-        
-        if (noChangeEvent !== true) {
-          this.element.fireEvent("change");
-        }
-        
-        return this;
-      }
-    });
-    
-    
-    Bundle.Checkbox = new Class({
-      // label
-      // action -> change
-      "Extends": Bundle,
-      
-      "createDOM": function () {
-        this.bundle = new Element("div", {
-          "class": "setting bundle checkbox"
-        });
-        
-        this.container = new Element("div", {
-          "class": "setting container checkbox"
-        });
-        
-        this.element = new Element("input", {
-          "id": String.uniqueID(),
-          "class": "setting element checkbox",
-          "type": "checkbox",
-          "value": "true"
-        });
-        
-        this.label = new Element("label", {
-          "class": "setting label checkbox",
-          "for": this.element.get("id")
-        });
-      },
-      
-      "setupDOM": function () {
-        this.element.inject(this.container);
-        this.container.inject(this.bundle);
-        
-        if (this.params.label !== undefined) {
-          this.label.set("html", this.params.label);
-          this.label.inject(this.container);
-          this.searchString += this.params.label + "•";
-        }
-      },
-      
-      "get": function () {
-        return this.element.get("checked");
-      },
-      
-      "set": function (value, noChangeEvent) {
-        this.element.set("checked", value);
         
         if (noChangeEvent !== true) {
           this.element.fireEvent("change");
