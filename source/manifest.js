@@ -132,17 +132,6 @@ this.manifest = {
     {
       "tab": "Details",
       "group": "Food",
-      "name": "myListBox",
-      "type": "listBox",
-      "label": "Soup 2 should be:",
-      "options": [
-        ["hot", "Hot and yummy"],
-        ["cold"]
-      ]
-    },
-    {
-      "tab": "Details",
-      "group": "Food",
       "name": "myRadioButtons",
       "type": "radioButtons",
       "label": "Soup 3 should be:",

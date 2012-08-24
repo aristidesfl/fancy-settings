@@ -1293,45 +1293,6 @@
       }
     });
     
-    Bundle.ListBox = new Class({
-      // label, options[{value, text}]
-      // action -> change
-      "Extends": Bundle.PopupButton,
-      
-      "createDOM": function () {
-        this.bundle = new Element("div", {
-          "class": "setting bundle list-box"
-        });
-        
-        this.container = new Element("div", {
-          "class": "setting container list-box"
-        });
-        
-        this.element = new Element("select", {
-          "class": "setting element list-box",
-          "size": "2"
-        });
-        
-        this.label = new Element("label", {
-          "class": "setting label list-box"
-        });
-        
-        if (this.params.options === undefined) { return; }
-        this.params.options.each((function (option) {
-          this.searchString += (option[1] || option[0]) + "•";
-          
-          (new Element("option", {
-            "value": option[0],
-            "text": option[1] || option[0]
-          })).inject(this.element);
-        }).bind(this));
-      },
-      
-      "get": function () {
-        return (this.element.get("value") || undefined);
-      }
-    });
-    
     Bundle.RadioButtons = new Class({
       // label, options[{value, text}]
       // action -> change
