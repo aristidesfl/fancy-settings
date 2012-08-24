@@ -11,5 +11,12 @@ Let's get started, it only takes a few minutes...
 [View Sample](http://frankkohlhepp.github.com/fancy-settings/)
 
 ### License
-Fancy Settings is licensed under the **LGPL 2.1**.  
+Fancy Settings is licensed under the **MIT-license**.  
 For details see *LICENSE.txt*
+
+Former versions of Fancy Settings were licensed under the LGPL v2.1 license.  
+The MIT-license applies retroactively to all versions, i.e. the whole Git repository.  
+Older versions are therefore dual-licensed under LGPL and MIT, newer version are licensed under MIT.
+
+Older versions refer to code committed before 08/24/2012 10:50 GMT  
+Newer versions refer to code committed after 08/24/2012 10:50 GMT

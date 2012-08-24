@@ -4,7 +4,7 @@
 ## Fancy Settings by Frank Kohlhepp
 ## Copyright (c) 2011 - 2012 Frank Kohlhepp
 ## https://github.com/frankkohlhepp/fancy-settings
-## License: LGPL v2.1
+## License: MIT-license
 */
 
 
