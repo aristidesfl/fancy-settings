@@ -155,6 +155,113 @@ class Text extends Bundle
     @element.set "disabled", true
     this
 
+class Textarea extends Bundle
+  # label, placeholder, default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle textarea"
+    
+    @container = new Element "div",
+      class: "setting container textarea"
+    
+    @element = new Element "textarea",
+      class: "setting element textarea"
+    
+    @label = new Element "label",
+      class: "setting label textarea"
+    
+    this
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.placeholder?
+      @element.set "placeholder", @params.placeholder
+      @searchString += "#{@params.placeholder}•"
+    
+    @check "default", "string", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    change = =>
+      value = @$get()
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    @element.addEvent "change", change
+    @element.addEvent "keyup", change
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "string"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "string"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    @element.get "value"
+  
+  $set: (value) =>
+    @element.set "value", value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
 class PushButton extends Bundle
   # label, value
   # disabled, enableKey, enableValue
@@ -315,6 +422,7 @@ window.Setting = class Setting
     # Available types
     types =
       text: Text
+      textarea: Textarea
       pushButton: PushButton
     
     if types[params.type]?

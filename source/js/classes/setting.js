@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, PushButton, Setting, Text, store,
+  var Bundle, PushButton, Setting, Text, Textarea, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -239,6 +239,152 @@
 
   })(Bundle);
 
+  Textarea = (function(_super) {
+
+    __extends(Textarea, _super);
+
+    function Textarea() {
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+      return Textarea.__super__.constructor.apply(this, arguments);
+    }
+
+    Textarea.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle textarea"
+      });
+      this.container = new Element("div", {
+        "class": "setting container textarea"
+      });
+      this.element = new Element("textarea", {
+        "class": "setting element textarea"
+      });
+      this.label = new Element("label", {
+        "class": "setting label textarea"
+      });
+      return this;
+    };
+
+    Textarea.prototype.setupDOM = function() {
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      if (this.params.placeholder != null) {
+        this.element.set("placeholder", this.params.placeholder);
+        this.searchString += "" + this.params.placeholder + "•";
+      }
+      this.check("default", "string", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      this.element.inject(this.container);
+      this.container.inject(this.bundle);
+      return this;
+    };
+
+    Textarea.prototype.setupEvents = function() {
+      var change, lastInput,
+        _this = this;
+      lastInput = this.get();
+      change = function() {
+        var value;
+        value = _this.$get();
+        _this.set(value);
+        lastInput = value;
+        return _this.fireEvent("change", value);
+      };
+      this.element.addEvent("change", change);
+      this.element.addEvent("keyup", change);
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    Textarea.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "string") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    Textarea.prototype.set = function(value) {
+      if (typeOf(value) === "string") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    Textarea.prototype.$get = function() {
+      return this.element.get("value");
+    };
+
+    Textarea.prototype.$set = function(value) {
+      this.element.set("value", value);
+      return this;
+    };
+
+    Textarea.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    Textarea.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    return Textarea;
+
+  })(Bundle);
+
   PushButton = (function(_super) {
 
     __extends(PushButton, _super);
@@ -343,6 +489,7 @@
       var bundle, types;
       types = {
         text: Text,
+        textarea: Textarea,
         pushButton: PushButton
       };
       if (types[params.type] != null) {
