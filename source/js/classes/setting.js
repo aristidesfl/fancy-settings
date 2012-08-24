@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, PushButton, Setting, Text, Textarea, store,
+  var Bundle, NumberBundle, PushButtonBundle, Setting, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -88,11 +88,11 @@
 
   })();
 
-  Text = (function(_super) {
+  TextBundle = (function(_super) {
 
-    __extends(Text, _super);
+    __extends(TextBundle, _super);
 
-    function Text() {
+    function TextBundle() {
       this.disable = __bind(this.disable, this);
 
       this.enable = __bind(this.enable, this);
@@ -110,10 +110,10 @@
       this.setupDOM = __bind(this.setupDOM, this);
 
       this.createDOM = __bind(this.createDOM, this);
-      return Text.__super__.constructor.apply(this, arguments);
+      return TextBundle.__super__.constructor.apply(this, arguments);
     }
 
-    Text.prototype.createDOM = function() {
+    TextBundle.prototype.createDOM = function() {
       this.bundle = new Element("div", {
         "class": "setting bundle text"
       });
@@ -130,7 +130,7 @@
       return this;
     };
 
-    Text.prototype.setupDOM = function() {
+    TextBundle.prototype.setupDOM = function() {
       if (this.params.label != null) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
@@ -161,7 +161,7 @@
       return this;
     };
 
-    Text.prototype.setupEvents = function() {
+    TextBundle.prototype.setupEvents = function() {
       var change, lastInput,
         _this = this;
       lastInput = this.get();
@@ -194,7 +194,7 @@
       return this;
     };
 
-    Text.prototype.get = function() {
+    TextBundle.prototype.get = function() {
       var value;
       value = store.get(this.params.name);
       if (typeOf(value) !== "string") {
@@ -205,7 +205,7 @@
       }
     };
 
-    Text.prototype.set = function(value) {
+    TextBundle.prototype.set = function(value) {
       if (typeOf(value) === "string") {
         store.set(this.params.name, value);
       } else {
@@ -214,36 +214,36 @@
       return this;
     };
 
-    Text.prototype.$get = function() {
+    TextBundle.prototype.$get = function() {
       return this.element.get("value");
     };
 
-    Text.prototype.$set = function(value) {
+    TextBundle.prototype.$set = function(value) {
       this.element.set("value", value);
       return this;
     };
 
-    Text.prototype.enable = function() {
+    TextBundle.prototype.enable = function() {
       this.bundle.removeClass("disabled");
       this.element.set("disabled", false);
       return this;
     };
 
-    Text.prototype.disable = function() {
+    TextBundle.prototype.disable = function() {
       this.bundle.addClass("disabled");
       this.element.set("disabled", true);
       return this;
     };
 
-    return Text;
+    return TextBundle;
 
   })(Bundle);
 
-  Textarea = (function(_super) {
+  NumberBundle = (function(_super) {
 
-    __extends(Textarea, _super);
+    __extends(NumberBundle, _super);
 
-    function Textarea() {
+    function NumberBundle() {
       this.disable = __bind(this.disable, this);
 
       this.enable = __bind(this.enable, this);
@@ -261,10 +261,166 @@
       this.setupDOM = __bind(this.setupDOM, this);
 
       this.createDOM = __bind(this.createDOM, this);
-      return Textarea.__super__.constructor.apply(this, arguments);
+      return NumberBundle.__super__.constructor.apply(this, arguments);
     }
 
-    Textarea.prototype.createDOM = function() {
+    NumberBundle.prototype.createDOM = function() {
+      this.bundle = new Element("div", {
+        "class": "setting bundle number"
+      });
+      this.container = new Element("div", {
+        "class": "setting container number"
+      });
+      this.element = new Element("input", {
+        "class": "setting element number",
+        type: "number"
+      });
+      this.label = new Element("label", {
+        "class": "setting label number"
+      });
+      return this;
+    };
+
+    NumberBundle.prototype.setupDOM = function() {
+      if (this.params.label != null) {
+        this.label.set("html", this.params.label);
+        this.label.inject(this.container);
+        this.searchString += "" + this.params.label + "•";
+      }
+      if (this.params.placeholder != null) {
+        this.element.set("placeholder", this.params.placeholder);
+        this.searchString += "" + this.params.placeholder + "•";
+      }
+      if (this.params.min != null) {
+        this.element.set("min", this.params.min);
+      }
+      if (this.params.max != null) {
+        this.element.set("max", this.params.max);
+      }
+      if (this.params.step != null) {
+        this.element.set("step", this.params.step);
+      }
+      this.check("default", "number", this.params["default"], this.params.name);
+      this.$set(this.get());
+      if (this.params.disabled) {
+        this.disable();
+      }
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        if (this.shouldBeEnabled(this.params.enableValue, store.get(this.params.enableKey))) {
+          this.enable();
+        } else {
+          this.disable();
+        }
+      }
+      this.element.inject(this.container);
+      this.container.inject(this.bundle);
+      return this;
+    };
+
+    NumberBundle.prototype.setupEvents = function() {
+      var change, lastInput,
+        _this = this;
+      lastInput = this.get();
+      change = function() {
+        var value;
+        value = _this.$get();
+        _this.set(value);
+        lastInput = value;
+        return _this.fireEvent("change", value);
+      };
+      this.element.addEvent("change", change);
+      this.element.addEvent("keyup", change);
+      store.addEvent(this.params.name, function() {
+        var value;
+        value = _this.get();
+        if (value !== lastInput) {
+          _this.$set(value);
+          return _this.fireEvent("change", value);
+        }
+      });
+      if ((this.params.enableKey != null) && (this.params.enableValue != null)) {
+        store.addEvent(this.params.enableKey, function() {
+          if (_this.shouldBeEnabled(_this.params.enableValue, store.get(_this.params.enableKey))) {
+            return _this.enable();
+          } else {
+            return _this.disable();
+          }
+        });
+      }
+      return this;
+    };
+
+    NumberBundle.prototype.get = function() {
+      var value;
+      value = store.get(this.params.name);
+      if (typeOf(value) !== "number") {
+        this.set(this.params["default"]);
+        return this.params["default"];
+      } else {
+        return value;
+      }
+    };
+
+    NumberBundle.prototype.set = function(value) {
+      if (typeOf(value) === "number") {
+        store.set(this.params.name, value);
+      } else {
+        store.set(this.params.name, this.params["default"]);
+      }
+      return this;
+    };
+
+    NumberBundle.prototype.$get = function() {
+      return Number(this.element.get("value"));
+    };
+
+    NumberBundle.prototype.$set = function(value) {
+      this.element.set("value", value);
+      return this;
+    };
+
+    NumberBundle.prototype.enable = function() {
+      this.bundle.removeClass("disabled");
+      this.element.set("disabled", false);
+      return this;
+    };
+
+    NumberBundle.prototype.disable = function() {
+      this.bundle.addClass("disabled");
+      this.element.set("disabled", true);
+      return this;
+    };
+
+    return NumberBundle;
+
+  })(Bundle);
+
+  TextareaBundle = (function(_super) {
+
+    __extends(TextareaBundle, _super);
+
+    function TextareaBundle() {
+      this.disable = __bind(this.disable, this);
+
+      this.enable = __bind(this.enable, this);
+
+      this.$set = __bind(this.$set, this);
+
+      this.$get = __bind(this.$get, this);
+
+      this.set = __bind(this.set, this);
+
+      this.get = __bind(this.get, this);
+
+      this.setupEvents = __bind(this.setupEvents, this);
+
+      this.setupDOM = __bind(this.setupDOM, this);
+
+      this.createDOM = __bind(this.createDOM, this);
+      return TextareaBundle.__super__.constructor.apply(this, arguments);
+    }
+
+    TextareaBundle.prototype.createDOM = function() {
       this.bundle = new Element("div", {
         "class": "setting bundle textarea"
       });
@@ -280,7 +436,7 @@
       return this;
     };
 
-    Textarea.prototype.setupDOM = function() {
+    TextareaBundle.prototype.setupDOM = function() {
       if (this.params.label != null) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
@@ -307,7 +463,7 @@
       return this;
     };
 
-    Textarea.prototype.setupEvents = function() {
+    TextareaBundle.prototype.setupEvents = function() {
       var change, lastInput,
         _this = this;
       lastInput = this.get();
@@ -340,7 +496,7 @@
       return this;
     };
 
-    Textarea.prototype.get = function() {
+    TextareaBundle.prototype.get = function() {
       var value;
       value = store.get(this.params.name);
       if (typeOf(value) !== "string") {
@@ -351,7 +507,7 @@
       }
     };
 
-    Textarea.prototype.set = function(value) {
+    TextareaBundle.prototype.set = function(value) {
       if (typeOf(value) === "string") {
         store.set(this.params.name, value);
       } else {
@@ -360,36 +516,36 @@
       return this;
     };
 
-    Textarea.prototype.$get = function() {
+    TextareaBundle.prototype.$get = function() {
       return this.element.get("value");
     };
 
-    Textarea.prototype.$set = function(value) {
+    TextareaBundle.prototype.$set = function(value) {
       this.element.set("value", value);
       return this;
     };
 
-    Textarea.prototype.enable = function() {
+    TextareaBundle.prototype.enable = function() {
       this.bundle.removeClass("disabled");
       this.element.set("disabled", false);
       return this;
     };
 
-    Textarea.prototype.disable = function() {
+    TextareaBundle.prototype.disable = function() {
       this.bundle.addClass("disabled");
       this.element.set("disabled", true);
       return this;
     };
 
-    return Textarea;
+    return TextareaBundle;
 
   })(Bundle);
 
-  PushButton = (function(_super) {
+  PushButtonBundle = (function(_super) {
 
-    __extends(PushButton, _super);
+    __extends(PushButtonBundle, _super);
 
-    function PushButton() {
+    function PushButtonBundle() {
       this.disable = __bind(this.disable, this);
 
       this.enable = __bind(this.enable, this);
@@ -399,10 +555,10 @@
       this.setupDOM = __bind(this.setupDOM, this);
 
       this.createDOM = __bind(this.createDOM, this);
-      return PushButton.__super__.constructor.apply(this, arguments);
+      return PushButtonBundle.__super__.constructor.apply(this, arguments);
     }
 
-    PushButton.prototype.createDOM = function() {
+    PushButtonBundle.prototype.createDOM = function() {
       this.bundle = new Element("div", {
         "class": "setting bundle pushbutton"
       });
@@ -419,7 +575,7 @@
       return this;
     };
 
-    PushButton.prototype.setupDOM = function() {
+    PushButtonBundle.prototype.setupDOM = function() {
       if (this.params.label != null) {
         this.label.set("html", this.params.label);
         this.label.inject(this.container);
@@ -444,7 +600,7 @@
       return this;
     };
 
-    PushButton.prototype.setupEvents = function() {
+    PushButtonBundle.prototype.setupEvents = function() {
       var _this = this;
       this.element.addEvent("click", function() {
         return _this.fireEvent("click");
@@ -461,19 +617,19 @@
       return this;
     };
 
-    PushButton.prototype.enable = function() {
+    PushButtonBundle.prototype.enable = function() {
       this.bundle.removeClass("disabled");
       this.element.set("disabled", false);
       return this;
     };
 
-    PushButton.prototype.disable = function() {
+    PushButtonBundle.prototype.disable = function() {
       this.bundle.addClass("disabled");
       this.element.set("disabled", true);
       return this;
     };
 
-    return PushButton;
+    return PushButtonBundle;
 
   })(Bundle);
 
@@ -488,9 +644,10 @@
     Setting.prototype["new"] = function(params) {
       var bundle, types;
       types = {
-        text: Text,
-        textarea: Textarea,
-        pushButton: PushButton
+        text: TextBundle,
+        number: NumberBundle,
+        textarea: TextareaBundle,
+        pushButton: PushButtonBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);

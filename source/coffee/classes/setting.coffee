@@ -43,7 +43,7 @@ class Bundle
       callback value, type
     this
 
-class Text extends Bundle
+class TextBundle extends Bundle
   # label, placeholder, masked, default
   # disabled, enableKey, enableValue
   #
@@ -155,7 +155,124 @@ class Text extends Bundle
     @element.set "disabled", true
     this
 
-class Textarea extends Bundle
+class NumberBundle extends Bundle
+  # label, placeholder, min, max, step, default
+  # disabled, enableKey, enableValue
+  #
+  # Events: change
+  
+  createDOM: =>
+    @bundle = new Element "div",
+      class: "setting bundle number"
+    
+    @container = new Element "div",
+      class: "setting container number"
+    
+    @element = new Element "input",
+      class: "setting element number",
+      type: "number"
+    
+    @label = new Element "label",
+      class: "setting label number"
+    
+    this
+  
+  setupDOM: =>
+    if @params.label?
+      @label.set "html", @params.label
+      @label.inject @container
+      @searchString += "#{@params.label}•"
+    
+    if @params.placeholder?
+      @element.set "placeholder", @params.placeholder
+      @searchString += "#{@params.placeholder}•"
+    
+    if @params.min?
+      @element.set "min", @params.min
+    
+    if @params.max?
+      @element.set "max", @params.max
+    
+    if @params.step?
+      @element.set "step", @params.step
+    
+    @check "default", "number", @params.default, @params.name
+    @$set @get()
+    
+    if @params.disabled
+      @disable()
+    
+    if @params.enableKey? and @params.enableValue?
+      if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+        @enable()
+      else
+        @disable()
+    
+    @element.inject @container
+    @container.inject @bundle
+    
+    this
+  
+  setupEvents: =>
+    lastInput = @get()
+    
+    change = =>
+      value = @$get()
+      @set value
+      lastInput = value
+      @fireEvent "change", value
+    
+    @element.addEvent "change", change
+    @element.addEvent "keyup", change
+    
+    store.addEvent @params.name, =>
+      value = @get()
+      if value isnt lastInput
+        @$set value
+        @fireEvent "change", value
+    
+    if @params.enableKey? and @params.enableValue?
+      store.addEvent @params.enableKey, =>
+        if @shouldBeEnabled @params.enableValue, store.get @params.enableKey
+          @enable()
+        else
+          @disable()
+    
+    this
+  
+  get: =>
+    value = store.get @params.name
+    if typeOf(value) isnt "number"
+      @set @params.default
+      @params.default
+    else
+      value
+  
+  set: (value) =>
+    if typeOf(value) is "number"
+      store.set @params.name, value
+    else
+      store.set @params.name, @params.default
+    this
+  
+  $get: =>
+    Number @element.get "value"
+  
+  $set: (value) =>
+    @element.set "value", value
+    this
+  
+  enable: =>
+    @bundle.removeClass "disabled"
+    @element.set "disabled", false
+    this
+  
+  disable: =>
+    @bundle.addClass "disabled"
+    @element.set "disabled", true
+    this
+
+class TextareaBundle extends Bundle
   # label, placeholder, default
   # disabled, enableKey, enableValue
   #
@@ -262,7 +379,7 @@ class Textarea extends Bundle
     @element.set "disabled", true
     this
 
-class PushButton extends Bundle
+class PushButtonBundle extends Bundle
   # label, value
   # disabled, enableKey, enableValue
   #
@@ -421,9 +538,10 @@ window.Setting = class Setting
   new: (params) =>
     # Available types
     types =
-      text: Text
-      textarea: Textarea
-      pushButton: PushButton
+      text: TextBundle
+      number: NumberBundle
+      textarea: TextareaBundle
+      pushButton: PushButtonBundle
     
     if types[params.type]?
       bundle = new types[params.type] params

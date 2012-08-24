@@ -28,6 +28,18 @@ this.manifest = {
     {
       "tab": i18n.get("information"),
       "group": i18n.get("login"),
+      "name": "myNumber",
+      "type": "number",
+      "label": "My Number:",
+      "placeholder": "something",
+      "default": 45,
+      "min": 0,
+      "max": 100,
+      "step": 5
+    },
+    {
+      "tab": i18n.get("information"),
+      "group": i18n.get("login"),
       "name": "additional_information",
       "type": "textarea",
       "label": "Additional Information:",
