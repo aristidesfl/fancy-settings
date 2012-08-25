@@ -1,159 +1,291 @@
 // SAMPLE
-this.manifest = {
-  "name": "FancyTube",
+window.manifest = {
+  "name": "My Extension",
   "settings": [
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("logout"),
-      "name": "myCheckbox",
-      "type": "checkbox",
-      "label": i18n.get("enable"),
-      "default": false
-    },
-    
-    {
-      "tab": i18n.get("information"),
-      "group": i18n.get("login"),
-      "name": "username",
+      "tab": "Tab 1",
+      "group": "Group 1",
+      "name": "myUsername",
       "type": "text",
-      "label": i18n.get("username"),
-      "placeholder": i18n.get("x-characters"),
-      "default": "My Username",
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "label": i18n.get("Enter username:"),
+      "placeholder": "e.g. \"frank.kohlhepp\"",
+      "masked": false,
+      "default": ""
     },
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("login"),
-      "name": "password",
+      "tab": "Tab 1",
+      "group": "Group 1",
+      "name": "myPassword",
       "type": "text",
-      "label": i18n.get("password"),
-      "placeholder": i18n.get("x-characters-pw"),
+      "label": i18n.get("Enter password:"),
+      "placeholder": "e.g. \"dn4l§8D§L&Hb%l/3jhf\"",
       "masked": true,
-      "default": "",
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "default": ""
     },
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("login"),
+      "tab": "Tab 1",
+      "group": "Group 1",
       "name": "myNumber",
       "type": "number",
-      "label": "My Number:",
-      "placeholder": "something",
-      "default": 45,
+      "label": "Enter number:",
       "min": 0,
       "max": 100,
       "step": 5,
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "default": 0
     },
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("login"),
-      "name": "additional_information",
+      "tab": "Tab 1",
+      "group": "Group 1",
+      "name": "myTextarea",
       "type": "textarea",
-      "label": "Additional Information:",
-      "placeholder": i18n.get("x-characters"),
-      "default": "",
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "label": "Enter some text:",
+      "placeholder": "e.g. a story about your last holiday",
+      "default": ""
     },
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("logout"),
-      "name": "myButton",
+      "tab": "Tab 1",
+      "group": "Group 2",
+      "name": "myPushButton",
       "type": "pushButton",
-      "label": i18n.get("disconnect"),
-      "value": i18n.get("logout"),
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "label": "Press this button:",
+      "value": "Login"
     },
-    
-    
-    
     {
-      "tab": i18n.get("information"),
-      "group": i18n.get("login"),
+      "tab": "Tab 1",
+      "group": "Group 2",
       "name": "myLabel",
       "type": "label",
-      "label": i18n.get("description"),
-      "enableKey": "myCheckbox",
-      "enableValue": true
+      "label": "This is some descriptive text and may span over multiple lines.\
+                There is no maximum length, you can write whatever you want.\
+                Lines will automatically break.<br>\
+                Or you can break them manually."
     },
-    
-    
-    
-    
     {
-      "tab": "Details",
-      "group": "Sound",
-      "name": "noti_volume",
+      "tab": "Tab 1",
+      "group": "Group 2",
+      "name": "myCheckbox",
+      "type": "checkbox",
+      "label": "Enable some Feature",
+      "default": false
+    },
+    {
+      "tab": "Tab 2",
+      "group": "Group 1",
+      "name": "mySlider",
       "type": "slider",
-      "label": "Notification volume:",
-      "max": 100,
+      "label": "Volume:",
       "min": 0,
-      "step": 1,
-      "display": true,
-      "default": 50
-    },
-    {
-      "tab": "Details",
-      "group": "Food",
-      "name": "myPopupButton",
-      "type": "popupButton",
-      "label": "Soup 1 should be:",
-      "options": [
-        ["hot", "Hot and yummy", "one"],
-        ["cold", "Cold and ugly", "two"],
-        ["cold2", "Cold and ugly 2", "two"],
-        ["nothing"]
-      ],
-      "default": "cold",
-      "disabled": false
-    },
-    
-    
-    {
-      "tab": "Details",
-      "group": "Sound",
-      "name": "sound_volume",
-      "type": "slider",
-      "label": "Sound volume:",
       "max": 100,
-      "min": 0,
       "step": 1,
       "display": true,
       "displayModifier": function (value) {
         return value + "%";
       },
+      "default": 50
+    },
+    {
+      "tab": "Tab 2",
+      "group": "Group 2",
+      "name": "myPopupButton",
+      "type": "popupButton",
+      "label": "Choose something:",
+      "options": [
+        ["opt1", "Option 1"],
+        ["opt2", "Option 2"],
+        ["Option 3"],
+        ["opt4", "Option 4", "Group 1"],
+        ["Option 5", null, "Group 1"],
+        ["opt6", "Option 6", "Group 2"],
+        ["Option 7", null, "Group 2"],
+      ],
+      "default": "opt2"
+    },
+    {
+      "tab": "Tab 2",
+      "group": "Group 2",
+      "name": "myRadioGroup",
+      "type": "radioGroup",
+      "label": "Choose another thing:",
+      "options": [
+        ["opt1", "Option 1"],
+        ["opt2", "Option 2"],
+        ["Option 3"],
+        ["opt4", "Option 4", "Group 1"],
+        ["Option 5", null, "Group 1"],
+        ["opt6", "Option 6", "Group 2"],
+        ["Option 7", null, "Group 2"],
+      ],
+      "default": "opt2"
+    },
+    
+    // TESTS
+    
+    // text
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testText1",
+      "type": "text",
+      "label": "Something:",
+      "default": ""
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testText2",
+      "type": "text",
+      "label": "Something else:",
+      "default": ""
+    },
+    
+    // number
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testNumber1",
+      "type": "number",
+      "label": "Something:",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testNumber2",
+      "type": "number",
+      "label": "Something else:",
+      "min": 0,
+      "max": 100,
+      "step": 5,
       "default": 0
     },
     
+    // textarea
     {
-      "tab": "Details",
-      "group": "Food",
-      "name": "myRadioButtons",
-      "type": "radioButtons",
-      "label": "Soup 3 should be:",
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testTextarea1",
+      "type": "textarea",
+      "label": "Something:",
+      "default": ""
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testTextarea2",
+      "type": "textarea",
+      "label": "Something else:",
+      "default": ""
+    },
+    
+    // pushButton
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testPushButton1",
+      "type": "pushButton",
+      "label": "Something:",
+      "value": "Do it!"
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testPushButton2",
+      "type": "pushButton",
+      "label": "Something else:",
+      "value": "Do it!"
+    },
+    
+    // slider
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testSlider1",
+      "type": "slider",
+      "label": "Something:",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "display": true,
+      "displayModifier": function (value) {
+        return value + "%";
+      },
+      "default": 50
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testSlider2",
+      "type": "slider",
+      "label": "Something else:",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "display": true,
+      "displayModifier": function (value) {
+        return value + "%";
+      },
+      "default": 50
+    },
+    
+    // popupButton
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testPopupButton1",
+      "type": "popupButton",
+      "label": "Something:",
       "options": [
-        ["hot", "Hot and yummy", "one"],
-        ["cold", "Cold and ugly", "two"],
-        ["cold2", "Cold and ugly 2", "two"],
-        ["nothing"]
+        ["opt1", "Option 1"],
+        ["opt2", "Option 2"],
+        ["Option 3"],
+        ["opt4", "Option 4", "Group 1"],
+        ["Option 5", null, "Group 1"],
+        ["opt6", "Option 6", "Group 2"],
+        ["Option 7", null, "Group 2"],
       ],
-      "default": "cold",
-      "disabled": false
+      "default": "opt2"
+    },
+    {
+      "tab": "Tests",
+      "group": "Alignment tests",
+      "name": "testPopupButton2",
+      "type": "popupButton",
+      "label": "Something else:",
+      "options": [
+        ["opt1", "Option 1"],
+        ["opt2", "Option 2"],
+        ["Option 3"],
+        ["opt4", "Option 4", "Group 1"],
+        ["Option 5", null, "Group 1"],
+        ["opt6", "Option 6", "Group 2"],
+        ["Option 7", null, "Group 2"],
+      ],
+      "default": "opt2"
     }
   ],
-  /*"alignment": [
+  "alignment": [
     [
-      "username",
-      "password"
+      "myUsername",
+      "myPassword",
+      "myNumber",
+      "myTextarea"
     ],
     [
-      "noti_volume",
-      "sound_volume"
+      "testText1",
+      "testText2",
+      "testNumber1",
+      "testNumber2",
+      "testTextarea1",
+      "testTextarea2",
+      "testPushButton1",
+      "testPushButton2",
+      "testSlider1",
+      "testSlider2",
+      "testPopupButton1",
+      "testPopupButton2"
     ]
-  ]*/
+  ]
 };
