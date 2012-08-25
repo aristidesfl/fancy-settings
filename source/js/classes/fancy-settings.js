@@ -80,7 +80,7 @@
       var success;
       success = typeOf(value) === "string" && !!value;
       if (!success) {
-        throw "Error: " + param + " is a required parameter. Check your manifest!";
+        throw "Error: \"" + param + "\" is a required parameter. Check your manifest!";
       }
       return this;
     };

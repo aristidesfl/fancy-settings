@@ -19,7 +19,7 @@ class Bundle
   
   check: (param, type, value, setting) =>
     unless typeOf(value) is type
-      throw """Error: #{param} is a required parameter (type: #{type}) for the setting "#{setting}". Check your manifest!"""
+      throw """Error: "#{param}" is a required parameter (type: #{type}) for the setting "#{setting}". Check your manifest!"""
     this
   
   shouldBeEnabled: (enableValue, value) =>

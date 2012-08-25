@@ -63,7 +63,7 @@ window.FancySettings = class FancySettings
   
   check: (param, value) =>
     success = typeOf(value) is "string" and !!value
-    throw "Error: #{param} is a required parameter. Check your manifest!" unless success
+    throw """Error: "#{param}" is a required parameter. Check your manifest!""" unless success
     this
   
   new: (params) =>

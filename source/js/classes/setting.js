@@ -40,7 +40,7 @@
 
     Bundle.prototype.check = function(param, type, value, setting) {
       if (typeOf(value) !== type) {
-        throw "Error: " + param + " is a required parameter (type: " + type + ") for the setting \"" + setting + "\". Check your manifest!";
+        throw "Error: \"" + param + "\" is a required parameter (type: " + type + ") for the setting \"" + setting + "\". Check your manifest!";
       }
       return this;
     };
