@@ -856,7 +856,7 @@ class PopupButtonBundle extends Bundle
     @element.set "disabled", true
     this
 
-class RadioButtonsBundle extends Bundle
+class RadioGroupBundle extends Bundle
   # label, options[[value, label, group*], ...], default
   # disabled, enableKey, enableValue
   #
@@ -871,10 +871,10 @@ class RadioButtonsBundle extends Bundle
   
   createDOM: =>
     @bundle = new Element "div",
-      class: "setting bundle radiobuttons"
+      class: "setting bundle radiogroup"
     
     @label = new Element "label",
-      class: "setting label radiobuttons"
+      class: "setting label radiogroup"
     
     this
   
@@ -883,16 +883,16 @@ class RadioButtonsBundle extends Bundle
     
     # Create new group
     group = (new Element "div",
-      class: "setting element-group radiobuttons"
+      class: "setting element-group radiogroup"
     ).inject @bundle
     
     group.name = (new Element "div",
-      class: "setting element-group-name radiobuttons"
+      class: "setting element-group-name radiogroup"
       text: name
     ).inject group
     
     group.content = (new Element "div",
-      class: "setting element-group-content radiobuttons"
+      class: "setting element-group-content radiogroup"
     ).inject group
     
     @groups[name] = group
@@ -910,18 +910,18 @@ class RadioButtonsBundle extends Bundle
         optionID = String.uniqueID()
         
         container = @containers[params[0]] = new Element "div",
-          class: "setting container radiobuttons"
+          class: "setting container radiogroup"
         
         @elements[params[0]] = (new Element "input",
           id: optionID
           name: settingID
-          class: "setting element radiobuttons"
+          class: "setting element radiogroup"
           type: "radio"
           value: params[0]
         ).inject container
         
         @labels[params[0]] = (new Element "label",
-          class: "setting element-label radiobuttons"
+          class: "setting element-label radiogroup"
           for: optionID
           text: params[1] or params[0]
         ).inject container
@@ -1024,7 +1024,7 @@ window.Setting = class Setting
       checkbox: CheckboxBundle
       slider: SliderBundle
       popupButton: PopupButtonBundle
-      radioButtons: RadioButtonsBundle
+      radioGroup: RadioGroupBundle
     
     if types[params.type]?
       bundle = new types[params.type] params

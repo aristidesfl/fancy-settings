@@ -9,7 +9,7 @@
 
 
 (function() {
-  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PopupButtonBundle, PushButtonBundle, RadioButtonsBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
+  var Bundle, CheckboxBundle, LabelBundle, NumberBundle, PopupButtonBundle, PushButtonBundle, RadioGroupBundle, Setting, SliderBundle, TextBundle, TextareaBundle, store,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
@@ -1196,11 +1196,11 @@
 
   })(Bundle);
 
-  RadioButtonsBundle = (function(_super) {
+  RadioGroupBundle = (function(_super) {
 
-    __extends(RadioButtonsBundle, _super);
+    __extends(RadioGroupBundle, _super);
 
-    function RadioButtonsBundle(params) {
+    function RadioGroupBundle(params) {
       this.params = params;
       this.disable = __bind(this.disable, this);
 
@@ -1226,38 +1226,38 @@
       this.containers = {};
       this.elements = {};
       this.labels = {};
-      RadioButtonsBundle.__super__.constructor.call(this, this.params);
+      RadioGroupBundle.__super__.constructor.call(this, this.params);
     }
 
-    RadioButtonsBundle.prototype.createDOM = function() {
+    RadioGroupBundle.prototype.createDOM = function() {
       this.bundle = new Element("div", {
-        "class": "setting bundle radiobuttons"
+        "class": "setting bundle radiogroup"
       });
       this.label = new Element("label", {
-        "class": "setting label radiobuttons"
+        "class": "setting label radiogroup"
       });
       return this;
     };
 
-    RadioButtonsBundle.prototype.getGroup = function(name) {
+    RadioGroupBundle.prototype.getGroup = function(name) {
       var group;
       if (this.groups[name] != null) {
         return this.groups[name];
       }
       group = (new Element("div", {
-        "class": "setting element-group radiobuttons"
+        "class": "setting element-group radiogroup"
       })).inject(this.bundle);
       group.name = (new Element("div", {
-        "class": "setting element-group-name radiobuttons",
+        "class": "setting element-group-name radiogroup",
         text: name
       })).inject(group);
       group.content = (new Element("div", {
-        "class": "setting element-group-content radiobuttons"
+        "class": "setting element-group-content radiogroup"
       })).inject(group);
       return this.groups[name] = group;
     };
 
-    RadioButtonsBundle.prototype.setupDOM = function() {
+    RadioGroupBundle.prototype.setupDOM = function() {
       var settingID,
         _this = this;
       if (this.params.label != null) {
@@ -1272,17 +1272,17 @@
           _this.searchString += "" + (params[1] || params[0]) + "•";
           optionID = String.uniqueID();
           container = _this.containers[params[0]] = new Element("div", {
-            "class": "setting container radiobuttons"
+            "class": "setting container radiogroup"
           });
           _this.elements[params[0]] = (new Element("input", {
             id: optionID,
             name: settingID,
-            "class": "setting element radiobuttons",
+            "class": "setting element radiogroup",
             type: "radio",
             value: params[0]
           })).inject(container);
           _this.labels[params[0]] = (new Element("label", {
-            "class": "setting element-label radiobuttons",
+            "class": "setting element-label radiogroup",
             "for": optionID,
             text: params[1] || params[0]
           })).inject(container);
@@ -1308,7 +1308,7 @@
       return this;
     };
 
-    RadioButtonsBundle.prototype.setupEvents = function() {
+    RadioGroupBundle.prototype.setupEvents = function() {
       var lastInput,
         _this = this;
       lastInput = this.get();
@@ -1341,7 +1341,7 @@
       return this;
     };
 
-    RadioButtonsBundle.prototype.get = function() {
+    RadioGroupBundle.prototype.get = function() {
       var value;
       value = store.get(this.params.name);
       if (typeOf(value) !== "string") {
@@ -1352,7 +1352,7 @@
       }
     };
 
-    RadioButtonsBundle.prototype.set = function(value) {
+    RadioGroupBundle.prototype.set = function(value) {
       if (typeOf(value) === "string") {
         store.set(this.params.name, value);
       } else {
@@ -1361,7 +1361,7 @@
       return this;
     };
 
-    RadioButtonsBundle.prototype.$get = function() {
+    RadioGroupBundle.prototype.$get = function() {
       var checkedElements,
         _this = this;
       checkedElements = Object.values(this.elements).filter(function(element) {
@@ -1374,7 +1374,7 @@
       }
     };
 
-    RadioButtonsBundle.prototype.$set = function(value) {
+    RadioGroupBundle.prototype.$set = function(value) {
       var _this = this;
       Object.each(this.elements, function(element) {
         if (element.get("value") === value) {
@@ -1384,7 +1384,7 @@
       return this;
     };
 
-    RadioButtonsBundle.prototype.enable = function() {
+    RadioGroupBundle.prototype.enable = function() {
       var _this = this;
       this.bundle.removeClass("disabled");
       Object.each(this.elements, function(element) {
@@ -1393,7 +1393,7 @@
       return this;
     };
 
-    RadioButtonsBundle.prototype.disable = function() {
+    RadioGroupBundle.prototype.disable = function() {
       var _this = this;
       this.bundle.addClass("disabled");
       Object.each(this.elements, function(element) {
@@ -1402,7 +1402,7 @@
       return this;
     };
 
-    return RadioButtonsBundle;
+    return RadioGroupBundle;
 
   })(Bundle);
 
@@ -1425,7 +1425,7 @@
         checkbox: CheckboxBundle,
         slider: SliderBundle,
         popupButton: PopupButtonBundle,
-        radioButtons: RadioButtonsBundle
+        radioGroup: RadioGroupBundle
       };
       if (types[params.type] != null) {
         bundle = new types[params.type](params);
