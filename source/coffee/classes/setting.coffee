@@ -156,7 +156,7 @@ class TextBundle extends Bundle
     this
 
 class NumberBundle extends Bundle
-  # label, placeholder, min, max, step, default
+  # label, min, max, step, default
   # disabled, enableKey, enableValue
   #
   # Events: change
@@ -182,10 +182,6 @@ class NumberBundle extends Bundle
       @label.set "html", @params.label
       @label.inject @container
       @searchString += "#{@params.label}•"
-    
-    if @params.placeholder?
-      @element.set "placeholder", @params.placeholder
-      @searchString += "#{@params.placeholder}•"
     
     if @params.min?
       @element.set "min", @params.min

@@ -287,10 +287,6 @@
         this.label.inject(this.container);
         this.searchString += "" + this.params.label + "•";
       }
-      if (this.params.placeholder != null) {
-        this.element.set("placeholder", this.params.placeholder);
-        this.searchString += "" + this.params.placeholder + "•";
-      }
       if (this.params.min != null) {
         this.element.set("min", this.params.min);
       }
