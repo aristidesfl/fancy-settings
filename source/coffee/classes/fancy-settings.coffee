@@ -73,6 +73,9 @@ window.FancySettings = class FancySettings
     @check "name", params.name
     @check "type", params.type
     
+    if @settings[params.name]?
+      throw """Error: A setting with name "#{params.name}" already exists."""
+    
     tab = @getTab params.tab
     group = @getGroup params.group, tab
     
@@ -86,47 +89,36 @@ window.FancySettings = class FancySettings
     setting
   
   align: (settings) =>
-    
     settings = settings.map (name) =>
       @settings[name]
     
+    maxOffset = 0
     types = [
       "text"
-      "button"
+      "number"
+      "pushButton"
       "slider"
       "popupButton"
     ]
     
-    type = settings[0].params.type
-    maxWidth = 0
-    
-    unless types.contains type
-      throw "invalidType"
-    
     document.html.addClass "measuring"
-    settings.each (setting) ->
-      if setting.params.type != type
-        throw "multipleTypes"
+    settings.each (setting) =>
+      unless types.contains setting.params.type
+        throw """Error: Type "#{setting.params.type}" can't be aligned."""
       
+      if setting.params.type is "pushButton" or "slider" or "popupButton"
+        offset = setting.label.offsetWidth + 3
+      else
+        offset = setting.label.offsetWidth
       
-      width = setting.label.offsetWidth
-      if width > maxWidth
-        maxWidth = width
-      
+      if offset > maxOffset
+        maxOffset = offset
     
-    
-    
-    settings.each (setting) ->
-      width = setting.label.offsetWidth
-      if width < maxWidth
-        if type == "button" or type == "slider"
-          setting.element.setStyle "margin-left", (maxWidth - width + 2) + "px"
-          #setting.search.element.setStyle "margin-left", (maxWidth - width + 2) + "px"
-        else
-          setting.element.setStyle "margin-left", (maxWidth - width) + "px"
-          #setting.search.element.setStyle "margin-left", (maxWidth - width) + "px"
+    settings.each (setting) =>
+      offset = setting.label.offsetWidth
+      if offset < maxOffset
+        setting.element.setStyle "margin-left", (maxOffset - offset) + "px"
     document.html.removeClass "measuring"
-
 
 FancySettings.initWithManifest = (callback) ->
   fancySettings = new FancySettings manifest.name

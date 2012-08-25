@@ -91,6 +91,9 @@
       this.check("group", params.group);
       this.check("name", params.name);
       this.check("type", params.type);
+      if (this.settings[params.name] != null) {
+        throw "Error: A setting with name \"" + params.name + "\" already exists.";
+      }
       tab = this.getTab(params.tab);
       group = this.getGroup(params.group, tab);
       setting = group.setting["new"](params);
@@ -102,37 +105,33 @@
     };
 
     FancySettings.prototype.align = function(settings) {
-      var maxWidth, type, types,
+      var maxOffset, types,
         _this = this;
       settings = settings.map(function(name) {
         return _this.settings[name];
       });
-      types = ["text", "button", "slider", "popupButton"];
-      type = settings[0].params.type;
-      maxWidth = 0;
-      if (!types.contains(type)) {
-        throw "invalidType";
-      }
+      maxOffset = 0;
+      types = ["text", "number", "pushButton", "slider", "popupButton"];
       document.html.addClass("measuring");
       settings.each(function(setting) {
-        var width;
-        if (setting.params.type !== type) {
-          throw "multipleTypes";
+        var offset;
+        if (!types.contains(setting.params.type)) {
+          throw "Error: Type \"" + setting.params.type + "\" can't be aligned.";
         }
-        width = setting.label.offsetWidth;
-        if (width > maxWidth) {
-          return maxWidth = width;
+        if (setting.params.type === "pushButton" || "slider" || "popupButton") {
+          offset = setting.label.offsetWidth + 3;
+        } else {
+          offset = setting.label.offsetWidth;
+        }
+        if (offset > maxOffset) {
+          return maxOffset = offset;
         }
       });
       settings.each(function(setting) {
-        var width;
-        width = setting.label.offsetWidth;
-        if (width < maxWidth) {
-          if (type === "button" || type === "slider") {
-            return setting.element.setStyle("margin-left", (maxWidth - width + 2) + "px");
-          } else {
-            return setting.element.setStyle("margin-left", (maxWidth - width) + "px");
-          }
+        var offset;
+        offset = setting.label.offsetWidth;
+        if (offset < maxOffset) {
+          return setting.element.setStyle("margin-left", (maxOffset - offset) + "px");
         }
       });
       return document.html.removeClass("measuring");
