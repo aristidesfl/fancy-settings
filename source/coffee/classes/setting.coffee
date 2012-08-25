@@ -1032,4 +1032,4 @@ window.Setting = class Setting
       bundle.bundle.inject @container
       bundle
     else
-      throw "Error: invalid type (#{params.type})"
+      throw "Error: Invalid type (#{params.type})"

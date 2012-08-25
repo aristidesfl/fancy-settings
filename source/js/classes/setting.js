@@ -1433,7 +1433,7 @@
         bundle.bundle.inject(this.container);
         return bundle;
       } else {
-        throw "Error: invalid type (" + params.type + ")";
+        throw "Error: Invalid type (" + params.type + ")";
       }
     };
 
