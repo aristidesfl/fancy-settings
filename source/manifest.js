@@ -162,24 +162,6 @@ window.manifest = {
       "default": 0
     },
     
-    // textarea
-    {
-      "tab": "Tests",
-      "group": "Alignment tests",
-      "name": "testTextarea1",
-      "type": "textarea",
-      "label": "Something:",
-      "default": ""
-    },
-    {
-      "tab": "Tests",
-      "group": "Alignment tests",
-      "name": "testTextarea2",
-      "type": "textarea",
-      "label": "Something else:",
-      "default": ""
-    },
-    
     // pushButton
     {
       "tab": "Tests",
@@ -270,16 +252,13 @@ window.manifest = {
     [
       "myUsername",
       "myPassword",
-      "myNumber",
-      "myTextarea"
+      "myNumber"
     ],
     [
       "testText1",
       "testText2",
       "testNumber1",
       "testNumber2",
-      "testTextarea1",
-      "testTextarea2",
       "testPushButton1",
       "testPushButton2",
       "testSlider1",

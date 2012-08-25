@@ -171,24 +171,6 @@ window.addEvent("domready", function () {
     "default": 0
   });
   
-  // textarea
-  fancySettings.new({
-    "tab": "Tests",
-    "group": "Alignment tests",
-    "name": "testTextarea1",
-    "type": "textarea",
-    "label": "Something:",
-    "default": ""
-  });
-  fancySettings.new({
-    "tab": "Tests",
-    "group": "Alignment tests",
-    "name": "testTextarea2",
-    "type": "textarea",
-    "label": "Something else:",
-    "default": ""
-  });
-  
   // pushButton
   fancySettings.new({
     "tab": "Tests",
@@ -278,16 +260,13 @@ window.addEvent("domready", function () {
   fancySettings.align([
     "myUsername",
     "myPassword",
-    "myNumber",
-    "myTextarea"
+    "myNumber"
   ]);
   fancySettings.align([
     "testText1",
     "testText2",
     "testNumber1",
     "testNumber2",
-    "testTextarea1",
-    "testTextarea2",
     "testPushButton1",
     "testPushButton2",
     "testSlider1",
