@@ -1287,7 +1287,7 @@
             text: params[1] || params[0]
           })).inject(container);
           if (params[2] != null) {
-            return container.inject(_this.getGroup(params[2]));
+            return container.inject(_this.getGroup(params[2]).content);
           } else {
             return container.inject(_this.bundle);
           }

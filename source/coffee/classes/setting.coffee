@@ -927,7 +927,7 @@ class RadioGroupBundle extends Bundle
         ).inject container
         
         if params[2]?
-          container.inject @getGroup params[2]
+          container.inject @getGroup(params[2]).content
         else
           container.inject @bundle
     
