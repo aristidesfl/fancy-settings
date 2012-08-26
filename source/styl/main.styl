@@ -30,7 +30,7 @@ body
 #tab-container
   margin-bottom: 20px
 
-#tab-container .tab
+#tab-container .tab, #search-tab
   padding: 6px 27px 5px 24px
   line-height: 1.5
   color: #999999
@@ -75,14 +75,3 @@ body
 #search
   position: fixed
   width: 250px
-
-.tab-content
-  display: none
-  margin-bottom: 20px
-  
-  html.searching &.match
-  html.measuring &
-    display: block
-
-html.searching #search-tab-content
-  display: block

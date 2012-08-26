@@ -7,7 +7,22 @@
 
 @import "../node_modules/nib"
 
-.tab-name
+// Tabs
+.tab-content
+  display: none
+  margin-bottom: 50px
+  
+  html.searching &.match
+  html.measuring &
+    display: block
+
+#search-tab-content
+  display: none
+  
+  html.searching &
+    display: block
+
+.tab-name, #search-tab-name
   position: fixed
   background: linear-gradient(top, white 40%, rgba(255, 255, 255, 0.92))
   border-bottom: 1px solid #eeeeee
@@ -28,11 +43,12 @@ html.searching #search-tab-name
 .tab-settings
   margin-top: 63px
 
-#search-tab-settings
-  display: block
+html.searching .tab-content.match + .tab-content.match .tab-settings
+  margin-top: -30px
 
+// Groups
 .setting.group
-  margin-top: 15px
+  margin-top: 20px
   
   html.searching &
     display: none
@@ -44,15 +60,15 @@ html.searching #search-tab-name
 .setting.group-name
   color: black
   font-size: 1.2em
-  vertical-align: top
 
 .setting.group-content
-  margin-top: 1px
-  margin-left: 18px
+  margin-top: 5px
+  margin-left: 22px
 
+// Settings
 .setting.bundle
-  max-width: 600px
-  margin-bottom: 5px
+  width: 700px
+  margin-bottom: 10px
   
   html.searching &
     display: none
@@ -61,38 +77,68 @@ html.searching #search-tab-name
   html.measuring &
     display: block
 
-.setting.bundle.list-box
-  margin-bottom: 10px
-
-.setting.label.radio-buttons + .setting.container.radio-buttons
-  margin-top: 3px
+.setting.container
+  width: 700px
 
 .setting.label, .setting.element-label
-  margin-right: 15px
+  margin-right: 20px
   font-size: 13px
-  font-weight: normal
 
-.setting.label.checkbox, .setting.element-label
+.setting.label.checkbox, .setting.element-label.radiogroup
+  position: relative
   margin-left: 5px
   margin-right: 0
-
-.setting.label.checkbox
-  position: relative
   top: 1px
+
+.setting.element.textarea
+  display: block
+  margin-top: 10px
+  margin-left: 20px
+  width: 620px
+  height: 150px
+
+.setting.element.label
+  font-size: 12px
+  line-height: 1.8em
+  color: #777777
 
 .setting.element.slider
   position: relative
-  width: 150px
+  width: 200px
   top: 4px
 
-.setting.element.list-box
-  display: block
-  height: 100px
-  width: 100%
-
 .setting.display.slider
+  margin-left: 8px
+  color: #555555
+
+
+
+
+.setting.label.radiogroup
+  display: inline-block
+  margin-bottom: 2px
+
+.setting.element-group.radiogroup
+  margin-top: 10px
+  margin-left: 20px
+  margin-bottom: 10px
+
+.setting.label.radiogroup + .setting.element-group.radiogroup
+  margin-top: 0
+
+.setting.container.radiogroup
+  margin-left: 20px
+
+.setting.element-group-name.radiogroup
+  margin-bottom: 2px
+  font-size: 13px
+
+.setting.element-group-content.radiogroup
+  border-left: 1px solid #cccccc
   margin-left: 5px
-  color: #666666
+  
+  & .setting.container.radiogroup
+    margin-left: 15px
 
 #nothing-found
   display: none

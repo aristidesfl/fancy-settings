@@ -28,18 +28,21 @@ body {
 #tab-container {
   margin-bottom: 20px;
 }
-#tab-container .tab {
+#tab-container .tab,
+#search-tab {
   padding: 6px 27px 5px 24px;
   line-height: 1.5;
   color: #999;
   cursor: pointer;
 }
-#tab-container .tab.active {
+#tab-container .tab.active,
+#search-tab.active {
   border-left: 6px solid #464e5a;
   padding-left: 18px;
   color: #464e5a;
 }
-html.searching #tab-container .tab.active {
+html.searching #tab-container .tab.active,
+html.searching #search-tab.active {
   border-left: none;
   padding-left: 24px;
   color: #999;
@@ -77,15 +80,4 @@ html.searching #search-tab {
 #search {
   position: fixed;
   width: 250px;
-}
-.tab-content {
-  display: none;
-  margin-bottom: 20px;
-}
-html.searching .tab-content.match,
-html.measuring .tab-content {
-  display: block;
-}
-html.searching #search-tab-content {
-  display: block;
 }
