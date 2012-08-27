@@ -8,7 +8,7 @@ lang = navigator.language.split("-")[0]
 
 window.i18n ?= {}
 window.i18n.get = (value, myLang = lang) ->
-  return myLang if value == "lang"
+  return myLang if value is "lang"
   
   if @[value]?
     value = @[value]
